@@ -88,7 +88,7 @@ public class Scanner {
     }
 
     private void scanToken() {
-        char c = source_.charAt(start_);
+        char c = advance();
         switch (c) {
             case '[':
                 addToken(LEFT_BRACE);break;
@@ -112,6 +112,11 @@ public class Scanner {
                 addToken(SEMICOLON);break;
             case '*':
                 addToken(STAR);break;
+            case ' ':
+            case '\t':
+                break;
+            case '\n':
+                line_ ++; break;
             /* below tokens need to lookahead one step
                 / //
                 ! !=
@@ -126,7 +131,72 @@ public class Scanner {
                         : BANG_EQUAL
                 ); break;
             case '=':
-
+                addToken(
+                        match('=')
+                        ? EQUAL_EQUAL
+                        : EQUAL
+                ); break;
+            case '>':
+                addToken(
+                        match('=')
+                        ? GREATER_EQUAL
+                        : GREATER
+                ); break;
+            case '<':
+                addToken(
+                        match('=')
+                        ? LESS_EQUAL
+                        : LESS
+                ); break;
+            case '/': {
+                // / or //
+                if(match('/')) {
+                    // comment, skip until newline
+                    while (!isAtEnd() && source_.charAt(current_) != '\n')
+                        current_ ++;
+                    // dont handle '\n',
+                    // handle it in next loop
+                } else {
+                    addToken(SLASH);
+                }
+                break;
+            }
+            default:
+                if(isDigit(c)) {
+                    // number
+                } else if(isAlpha(c)) {
+                    // identifier
+                } else {
+                    // error
+                }
         }
+        // move forward start_ pointer
+        start_ = current_;
+    }
+    // number handler
+    private void number() {
+        while (isDigit(source_.charAt(current_))) {
+            advance();
+        }
+        if(match('.')){
+            while (isDigit(source_.charAt(current_))) {
+                advance();
+            }
+        }
+        //
+    }
+    // id handler
+    private void identifier() {
+
+    }
+
+    // judge character type
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+    private boolean isAlpha(char c) {
+        return isDigit(c)
+                || (c >= 'a' && c <= 'z')
+                || (c >= 'A' && c <= 'Z');
     }
 }
