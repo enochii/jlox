@@ -1,11 +1,11 @@
-package java.com.jlox;
+package toy.jlox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.com.jlox.TokenType.*;
+import static toy.jlox.TokenType.*;
 
 
 /**
@@ -87,6 +87,13 @@ public class Scanner {
         return false;
     }
 
+    public List<Token> scanTokens() {
+        while (!isAtEnd()) {
+            scanToken();
+        }
+        return tokens_;
+    }
+
     private void scanToken() {
         char c = advance();
         switch (c) {
@@ -161,33 +168,67 @@ public class Scanner {
                 }
                 break;
             }
+            case '"': {
+                // string, enable multiple-line string
+                while (!isAtEnd() && peek() != '"') {
+                    char p = advance();
+                    if(p == '\n') ++line_;
+                }
+                if(isAtEnd()) {
+                    // error
+                    Lox.error(line_, "No matched \" ");
+                } else {
+                    // quoted content
+                    String text = source_.substring(start_+1, current_);
+                    addToken(STRING, text);
+                    advance();
+                }
+
+                break;
+            }
             default:
                 if(isDigit(c)) {
                     // number
+                    number();
                 } else if(isAlpha(c)) {
                     // identifier
+                    identifier();
                 } else {
                     // error
+                    Lox.error(line_, "Invalid char " + c);
                 }
+                break;
         }
         // move forward start_ pointer
         start_ = current_;
     }
     // number handler
     private void number() {
-        while (isDigit(source_.charAt(current_))) {
+        while (isDigit(peek())) {
             advance();
         }
         if(match('.')){
-            while (isDigit(source_.charAt(current_))) {
+            while (isDigit(peek())) {
                 advance();
             }
         }
         //
+        addToken(NUM,
+                Double.parseDouble(source_.substring(start_, current_)));
     }
-    // id handler
+    // id & keyword handler
     private void identifier() {
+        advance(); // already test before
+        while (isAlphaOrDigit(peek())) {
+            advance();
+        }
 
+        String text = source_.substring(start_, current_);
+        if(keywords_.containsKey(text)) {
+            addToken(keywords_.get(text));
+        } else {
+            addToken(IDENTIFIER, text);
+        }
     }
 
     // judge character type
@@ -195,8 +236,12 @@ public class Scanner {
         return c >= '0' && c <= '9';
     }
     private boolean isAlpha(char c) {
-        return isDigit(c)
+        return  c  == '_'
                 || (c >= 'a' && c <= 'z')
                 || (c >= 'A' && c <= 'Z');
+    }
+
+    private boolean isAlphaOrDigit(char c) {
+        return isAlpha(c) || isDigit(c);
     }
 }

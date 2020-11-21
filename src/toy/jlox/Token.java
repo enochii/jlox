@@ -1,4 +1,4 @@
-package java.com.jlox;
+package toy.jlox;
 
 /**
  * @author : SCH001
@@ -15,5 +15,20 @@ public class Token {
         this.lexeme_ = lexeme;
         this.literal_ = literal;
         this.line_ = line;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "";
+        switch (tokenType_) {
+            case IDENTIFIER:
+                ret += lexeme_ + "(id)"; break;
+            case STRING:
+            case NUM:
+                ret += literal_ + "(const)"; break;
+            default:
+                ret += tokenType_;
+        }
+        return ret;
     }
 }
