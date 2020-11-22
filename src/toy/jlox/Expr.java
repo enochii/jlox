@@ -1,9 +1,11 @@
+// this file is generated automatically by running src/toy/tool/generate_ast.py
+
 package toy.jlox;
 
 
 abstract class Expr {
     static class Binary extends Expr {
-        Binary( Expr left, Token op, Expr right)        {
+        Binary(Expr left, Token op, Expr right)        {
             this.left = left;
             this.op = op;
             this.right = right;
@@ -15,7 +17,7 @@ abstract class Expr {
     }
     
     static class Unary extends Expr {
-        Unary( Expr expr, Token op)        {
+        Unary(Expr expr, Token op)        {
             this.expr = expr;
             this.op = op;
         }
@@ -25,7 +27,7 @@ abstract class Expr {
     }
     
     static class Grouping extends Expr {
-        Grouping( Expr expr)        {
+        Grouping(Expr expr)        {
             this.expr = expr;
         }
         
@@ -33,7 +35,7 @@ abstract class Expr {
     }
     
     static class Literal extends Expr {
-        Literal( Object val)        {
+        Literal(Object val)        {
             this.val = val;
         }
         

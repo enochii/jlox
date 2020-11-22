@@ -22,6 +22,9 @@ class generate_ast():
 
     def define_types(self, output_dir, base_class_name, sub_types):
         self.output_file = open(path.join(output_dir, base_class_name+'.java'), "w")
+
+        self.writeln("// this file is generated automatically by running src/toy/tool/generate_ast.py\n")
+
         self.writeln("package toy.jlox;")
         self.writeln()
         self.writeln()
@@ -47,14 +50,15 @@ class generate_ast():
 
     
     def define_type(self, class_name, field_list: str):
-        self.write(class_name + "(" + field_list + ")")
+        self.write(class_name + "(" + field_list.strip() + ")")
         self.writeln("{")
         self.add_tab()
 
         fields = field_list.split(',')
+        fields = [fld.strip() for fld in fields]
         # init fields
         for field_with_type in fields:
-            fld = field_with_type.split(' ')[-1]
+            fld = field_with_type.strip().split(' ')[-1]
             self.writeln("this." + fld + " = " + fld + ";")
 
         self.rm_tab();
@@ -64,7 +68,7 @@ class generate_ast():
 
         # fields declaration
         for field_with_type in fields:
-            self.writeln("final" + field_with_type + ";")
+            self.writeln("final " + field_with_type + ";")
 
 if __name__ == "__main__":
     generate_ast().define_types("../jlox", "Expr", 
