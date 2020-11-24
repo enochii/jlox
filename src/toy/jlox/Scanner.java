@@ -176,7 +176,7 @@ public class Scanner {
                 }
                 if(isAtEnd()) {
                     // error
-                    Lox.error(line_, "No matched \" ");
+                    Lox.error(line_, "no matched '\"' ");
                 } else {
                     // quoted content
                     String text = source_.substring(start_+1, current_);
