@@ -74,7 +74,7 @@ if __name__ == "__main__":
     generate_ast().define_types("../jlox", "Expr", 
         [
             "Binary, Expr left, Token op, Expr right",
-            "Unary, Expr expr, Token op",
+            "Unary, Token op, Expr expr",
             "Grouping, Expr expr",
             "Literal, Object val" 
         ])

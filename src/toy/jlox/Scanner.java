@@ -50,6 +50,7 @@ public class Scanner {
 
     // helper methods
     private char peek() {
+        if(isAtEnd()) return '\0';
         return source_.charAt(current_);
     }
     private char peekNext() {
@@ -80,7 +81,7 @@ public class Scanner {
         conditional advance
      */
     private boolean match(char c) {
-        if(source_.charAt(current_) == c) {
+        if(peek() == c) {
             ++current_;
             return true;
         }
@@ -91,6 +92,7 @@ public class Scanner {
         while (!isAtEnd()) {
             scanToken();
         }
+        addToken(EOF);
         return tokens_;
     }
 

@@ -29,15 +29,16 @@ public class Lox {
     public static void main(String[] args) {
 	// write your code here
         System.out.println("Hello!");
-        run("var id =0000; var str=\"string\"");
-        run("var multiple_line_2str=\"aaaaa\\nbbb\"");
-        //
-        run("\"ssss");
+        run("1* 2+3*-3");
+        run("1+2");
+//        run("var id =0000; var str=\"string\"");
+//        run("var multiple_line_2str=\"aaaaa\\nbbb\"");
+//        run("\"ssss");
     }
 
     static void run(String source) {
         List<Token> tokens = new Scanner(source).scanTokens();
-        System.out.println(tokens);
+        Expr expr = new Parser(tokens).expression();
     }
 
     static void runPrompt() {

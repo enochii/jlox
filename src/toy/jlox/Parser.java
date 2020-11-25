@@ -20,36 +20,71 @@ public class Parser {
         this.current_ = 0;
     }
 
-    private Expr expression() {
-        return null;
+    public Expr expression() {
+        try {
+            return equality();
+        } catch (ParseError parseError) {
+            return null;
+        }
     }
 
     // equality -> equality (!= | ==) comparison
     //          -> comparison
     // to remove recursion, we transform into:
-    // equality -> comparison ("!=" | "==" comparison)*
+    // equality -> comparison (("!=" | "==") comparison)*
     private Expr equality() {
-        return null;
+        Expr expr = comparision();
+        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            Token op = previous();
+            Expr right = comparision();
+            // left associativity
+            expr = new Expr.Binary(expr, op, right);
+        }
+        return expr;
     }
 
     // < <= > >=
+    // term (("<" | "<=" | ">" | ">=") term)*
     private Expr comparision() {
-        return null;
+        Expr expr = term();
+        while (match(LESS, LESS_EQUAL, GREATER, GREATER_EQUAL)) {
+            Token op = previous();
+            Expr right = term();
+            expr = new Expr.Binary(expr, op, right);
+        }
+        return expr;
     }
 
     // + -
     private Expr term() {
-        return null;
+        Expr expr = factor();
+        while (match(PLUS, MINUS)) {
+            Token op = previous();
+            Expr right = factor();
+            expr = new Expr.Binary(expr, op, right);
+        }
+        return expr;
     }
 
     // * /
     private Expr factor() {
-        return null;
+        Expr expr = unary();
+        while (match(STAR, SLASH)) {
+            Token op = previous();
+            Expr right = unary();
+            expr = new Expr.Binary(expr, op, right);
+        }
+        return expr;
     }
 
     // ! -
     private Expr unary() {
-        return null;
+        if (match(MINUS, BANG)) {
+            Token op = previous();
+            // recursion
+            return new Expr.Unary(op, unary());
+        }
+        return primary();
     }
 
     // literal
@@ -105,6 +140,9 @@ public class Parser {
         return false;
     }
 
+    private boolean isAtEnd() {
+        return peek().tokenType_ == EOF;
+    }
     private Token peek() {
         return tokens_.get(current_);
     }

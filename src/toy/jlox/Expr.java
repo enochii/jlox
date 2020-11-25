@@ -17,13 +17,13 @@ abstract class Expr {
     }
     
     static class Unary extends Expr {
-        Unary(Expr expr, Token op)        {
-            this.expr = expr;
+        Unary(Token op, Expr expr)        {
             this.op = op;
+            this.expr = expr;
         }
         
-        final Expr expr;
         final Token op;
+        final Expr expr;
     }
     
     static class Grouping extends Expr {
