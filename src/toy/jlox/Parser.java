@@ -24,6 +24,7 @@ public class Parser {
         try {
             return equality();
         } catch (ParseError parseError) {
+            // todo: error recovery, synchronization
             return null;
         }
     }
