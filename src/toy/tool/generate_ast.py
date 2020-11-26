@@ -31,6 +31,8 @@ class generate_ast():
         self.writeln("abstract class Expr {")
 
         self.add_tab()
+        self.writeln("abstract <R> R accept(Visitor<R> v);")
+        self.writeln()
         for sub_type in sub_types:
             # class_name, type1 field1 (, type2 field2) *
             # Binary, Expr left, Token op, Expr right
@@ -61,17 +63,24 @@ class generate_ast():
             fld = field_with_type.strip().split(' ')[-1]
             self.writeln("this." + fld + " = " + fld + ";")
 
-        self.rm_tab();
+        self.rm_tab()
         self.writeln("}")
 
         self.writeln()
+        self.writeln("@Override")
+        self.writeln("<R> R accept(Visitor<R> v) {")
+        self.add_tab()
+        self.writeln("return v.visit" + class_name + "(this);")
+        self.rm_tab()
+        self.writeln("}")
 
+        self.writeln()
         # fields declaration
         for field_with_type in fields:
             self.writeln("final " + field_with_type + ";")
 
 if __name__ == "__main__":
-    generate_ast().define_types("../jlox", "Expr", 
+    generate_ast().define_types("../jlox", "Expr",
         [
             "Binary, Expr left, Token op, Expr right",
             "Unary, Token op, Expr expr",
