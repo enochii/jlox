@@ -39,6 +39,10 @@ public class Lox {
     static void run(String source) {
         List<Token> tokens = new Scanner(source).scanTokens();
         Expr expr = new Parser(tokens).expression();
+        ASTPrinter astPrinter = new ASTPrinter();
+        System.out.println(source + " -> " + expr.accept(astPrinter));
+        ASTEvaluator astEvaluator = new ASTEvaluator();
+        System.out.println("result = " + expr.accept(astEvaluator));
     }
 
     static void runPrompt() {
