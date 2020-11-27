@@ -7,7 +7,10 @@ import static toy.jlox.TokenType.EOF;
 public class Lox {
     // find more errors rather than executing program
     // when trigger a error, we will set this
-    private static boolean hadError = true;
+    private static boolean hadError = false;
+    private static boolean hadRuntimeError = false;
+    private static ASTEvaluator interpreter = new ASTEvaluator();
+
     static void error(int line, String message) {
         report(line, "", message);
     }
@@ -17,6 +20,13 @@ public class Lox {
         } else {
             report(token.line_, "at '" + token.lexeme_ + "'", message);
         }
+    }
+
+    static void runtimeError(Token token, String msg) {
+        System.out.println(
+                "Runtime Error: " + msg + " at line " + token.line_
+        );
+        hadRuntimeError = true;
     }
 
     private static void report(int line, String where, String message) {
@@ -31,9 +41,7 @@ public class Lox {
         System.out.println("Hello!");
         run("1* 2+3*-3");
         run("1+2");
-//        run("var id =0000; var str=\"string\"");
-//        run("var multiple_line_2str=\"aaaaa\\nbbb\"");
-//        run("\"ssss");
+        run("\n1-false");
     }
 
     static void run(String source) {
@@ -41,8 +49,8 @@ public class Lox {
         Expr expr = new Parser(tokens).expression();
         ASTPrinter astPrinter = new ASTPrinter();
         System.out.println(source + " -> " + expr.accept(astPrinter));
-        ASTEvaluator astEvaluator = new ASTEvaluator();
-        System.out.println("result = " + expr.accept(astEvaluator));
+
+        interpreter.interpret(expr);
     }
 
     static void runPrompt() {
