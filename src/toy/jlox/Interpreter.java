@@ -12,7 +12,8 @@ import static toy.jlox.TokenType.*;
  */
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     // variables bindings
-    private Map<String, Object> bindings_ = new HashMap<>();
+//    private Map<String, Object> bindings_ = new HashMap<>();
+    Environment env_ = new Environment();
 
     @Override
     public Void visitExprStmt(Stmt.ExprStmt stmt) {
@@ -33,11 +34,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if(stmt.expr != null) {
             res = evaluate(stmt.expr);
         }
-        bindings_.put(stmt.name, res);
+        env_.define(stmt.name, res);
         return null;
     }
 
-    private class RuntimeError extends RuntimeException {
+    static class RuntimeError extends RuntimeException {
         Token token;
         RuntimeError(Token token, String msg) {
             super(msg);
@@ -155,6 +156,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitAssign(Expr.Assign expr) {
+        Token token = expr.name;
+        Object res = null;
+        // it maybe a recursive assignment
+        // and we do a post order visit
+        if(expr.newVal != null) {
+            res = evaluate(expr.newVal);
+        }
+        env_.assign(token, res);
+        return res;
+    }
+
+    @Override
     public Object visitUnary(Expr.Unary unary) {
         Object res = evaluate(unary.expr);
         Token op = unary.op;
@@ -187,10 +201,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVariable(Expr.Variable expr) {
-        String name = expr.var.lexeme_;
-        if(!bindings_.containsKey(name)) {
-            throw new RuntimeError(expr.var, "No such variable "+name);
-        }
-        return bindings_.get(name);
+        return env_.get(expr.var);
     }
 }

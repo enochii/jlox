@@ -6,6 +6,21 @@ package toy.jlox;
 abstract class Expr {
     abstract <R> R accept(Visitor<R> v);
     
+    static class Assign extends Expr {
+        Assign(Token name, Expr newVal)        {
+            this.name = name;
+            this.newVal = newVal;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitAssign(this);
+        }
+        
+        final Token name;
+        final Expr newVal;
+    }
+    
     static class Binary extends Expr {
         Binary(Expr left, Token op, Expr right)        {
             this.left = left;
@@ -78,6 +93,7 @@ abstract class Expr {
     }
     
     public interface Visitor<R> {
+        R visitAssign(Assign expr);
         R visitBinary(Binary expr);
         R visitUnary(Unary expr);
         R visitGrouping(Grouping expr);

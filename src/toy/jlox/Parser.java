@@ -89,11 +89,25 @@ public class Parser {
     // Expressions
     private Expr expression() {
         try {
-            return equality();
+            return assignment();
         } catch (ParseError parseError) {
             // todo: error recovery, synchronization
             return null;
         }
+    }
+
+    // expression -> assignment
+    // assignment -> (name =) expression
+    //              equality
+    private Expr assignment() {
+        if(peek().tokenType_ == IDENTIFIER &&
+            next().tokenType_ == EQUAL
+        ) {
+            Token name = advance();
+            advance(); // =
+            return new Expr.Assign(name, expression());
+        }
+        return equality();
     }
 
     // equality -> equality (!= | ==) comparison
@@ -223,5 +237,9 @@ public class Parser {
 
     private Token previous() {
         return tokens_.get(current_ - 1);
+    }
+
+    private Token next() {
+        return tokens_.get(current_ + 1);
     }
 }

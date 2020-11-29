@@ -19,7 +19,7 @@ public class Scanner {
     // pointers to characters
     int start_ = 0, current_ = 0;
     // current line number
-    int line_ = 0;
+    int line_ = 1;
 
     public Scanner(String source) {
         this.source_ = source;

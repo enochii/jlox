@@ -5,17 +5,26 @@ package toy.jlox;
  * @description :
  */
 public class ASTPrinter implements Expr.Visitor<String> {
+    public String print(Expr expr) {
+        return expr.accept(this);
+    }
+    @Override
+    public String visitAssign(Expr.Assign expr) {
+        return expr.name.lexeme_ + " = "
+        + print(expr.newVal);
+    }
+
     @Override
     public String visitBinary(Expr.Binary binary) {
         return "(" + binary.op.lexeme_ + " "
-                + binary.left.accept(this) + " "
-                + binary.right.accept(this) + ")";
+                + print(binary.left) + " "
+                + print(binary.right) + ")";
     }
 
     @Override
     public String visitUnary(Expr.Unary unary) {
         return "(" + unary.op.lexeme_ + " "
-                + unary.expr.accept(this) + ")";
+                + print(unary.expr) + ")";
     }
 
     @Override
