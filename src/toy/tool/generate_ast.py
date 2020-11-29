@@ -95,10 +95,12 @@ if __name__ == "__main__":
             "Binary, Expr left, Token op, Expr right",
             "Unary, Token op, Expr expr",
             "Grouping, Expr expr",
-            "Literal, Object val" 
+            "Literal, Object val",
+            "Variable, Token var"
         ])
     generate_ast().define_types("../jlox", "Stmt",
         [
             "ExprStmt, Expr expr",
-            "PrintStmt, Expr expr"
+            "PrintStmt, Expr expr",
+            "DefinitionStmt, String name, Expr expr",
         ])

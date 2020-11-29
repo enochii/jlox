@@ -27,4 +27,9 @@ public class ASTPrinter implements Expr.Visitor<String> {
     public String visitLiteral(Expr.Literal literal) {
         return literal.val.toString();
     }
+
+    @Override
+    public String visitVariable(Expr.Variable expr) {
+        return expr.var.toString();
+    }
 }

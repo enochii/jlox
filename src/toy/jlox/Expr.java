@@ -64,10 +64,24 @@ abstract class Expr {
         final Object val;
     }
     
+    static class Variable extends Expr {
+        Variable(Token var)        {
+            this.var = var;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitVariable(this);
+        }
+        
+        final Token var;
+    }
+    
     public interface Visitor<R> {
         R visitBinary(Binary expr);
         R visitUnary(Unary expr);
         R visitGrouping(Grouping expr);
         R visitLiteral(Literal expr);
+        R visitVariable(Variable expr);
     }
 }

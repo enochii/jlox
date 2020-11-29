@@ -1,6 +1,8 @@
 package toy.jlox;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static toy.jlox.TokenType.*;
 
@@ -9,6 +11,9 @@ import static toy.jlox.TokenType.*;
  * @description :
  */
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    // variables bindings
+    private Map<String, Object> bindings_ = new HashMap<>();
+
     @Override
     public Void visitExprStmt(Stmt.ExprStmt stmt) {
         evaluate(stmt.expr);
@@ -19,6 +24,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public Void visitPrintStmt(Stmt.PrintStmt stmt) {
         Object val = evaluate(stmt.expr);
         System.out.println(stringify(val));
+        return null;
+    }
+
+    @Override
+    public Void visitDefinitionStmt(Stmt.DefinitionStmt stmt) {
+        Object res = null;
+        if(stmt.expr != null) {
+            res = evaluate(stmt.expr);
+        }
+        bindings_.put(stmt.name, res);
         return null;
     }
 
@@ -55,14 +70,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     // stringify the result
     private String stringify(Object val) {
-        if(val instanceof Boolean ) {
-            return val.toString();
-        } else if(val instanceof Double) {
+        if(val == null) return "nil";
+        if(val instanceof Double) {
             String str = val.toString();
             if(str.endsWith(".0")) return str.substring(0, str.length()-2);
         }
 
-        return null;
+        return val.toString();
     }
 
     @Override
@@ -169,5 +183,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitLiteral(Expr.Literal literal) {
         return literal.val;
+    }
+
+    @Override
+    public Object visitVariable(Expr.Variable expr) {
+        String name = expr.var.lexeme_;
+        if(!bindings_.containsKey(name)) {
+            throw new RuntimeError(expr.var, "No such variable "+name);
+        }
+        return bindings_.get(name);
     }
 }

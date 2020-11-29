@@ -24,29 +24,61 @@ public class Parser {
         this.stmts_ = new ArrayList<>();
     }
 
+    /*
+        program -> declaration* EOF
+
+        declaration -> definitionStmt
+                    |  statement
+
+        // distinct the declaration and non-declaring statement
+        // to disable things like "if() var x = 1;"
+        // some places we allow the latter but not the former
+        declaration -> varDeclaration
+                    |  statement
+     */
     public List<Stmt> program() {
         while (peek().tokenType_ != EOF) {
-            Stmt stmt = statement();
+            Stmt stmt = declaration();
             stmts_.add(stmt);
         }
         advance(); //EOF
         return stmts_;
     }
 
-    public Stmt printStmt() {
+    private Stmt declaration() {
+        if(match(VAR)) return definitionStmt();
+        return statement();
+    }
+
+    private Stmt printStmt() {
         // the print token has been consumed already
         Expr expr = expression();
         consume(SEMICOLON, "Expect a ';' here to end a print statement");
         return new Stmt.PrintStmt(expr);
     }
 
-    public Stmt exprStmt() {
+    private Stmt exprStmt() {
         Expr expr = expression();
         consume(SEMICOLON, "Expect a ';' here to end a expression statement");
         return new Stmt.ExprStmt(expr);
     }
 
-    public Stmt statement() {
+    private Stmt definitionStmt() {
+        // var token has been consumed
+        if(match(IDENTIFIER)) {
+            Token var = previous();
+
+            Expr rvalue = null;
+            if(match(EQUAL)) {
+                rvalue = expression();
+            }
+            consume(SEMICOLON, "Expect a ';' here");
+            return new Stmt.DefinitionStmt(var.lexeme_, rvalue);
+        }
+        throw error(peek(), "Invalid Definition");
+    }
+
+    private Stmt statement() {
         if(match(PRINT)) {
             return printStmt();
         }
@@ -54,8 +86,8 @@ public class Parser {
     }
 
 
-
-    public Expr expression() {
+    // Expressions
+    private Expr expression() {
         try {
             return equality();
         } catch (ParseError parseError) {
@@ -133,7 +165,8 @@ public class Parser {
 
         if(match(STRING, NUM))
             return new Expr.Literal(previous().literal_);
-
+        if (match(IDENTIFIER))
+            return new Expr.Variable(previous());
         // parentheses
         if(match(LEFT_PAREN)) {
             Expr grouped = expression();

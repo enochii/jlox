@@ -220,7 +220,6 @@ public class Scanner {
     }
     // id & keyword handler
     private void identifier() {
-        advance(); // already test before
         while (isAlphaOrDigit(peek())) {
             advance();
         }
