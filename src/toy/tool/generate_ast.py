@@ -28,7 +28,7 @@ class generate_ast():
         self.writeln("package toy.jlox;")
         self.writeln()
         self.writeln()
-        self.writeln("abstract class Expr {")
+        self.writeln("abstract class " + base_class_name + " {")
 
         self.add_tab()
         self.writeln("abstract <R> R accept(Visitor<R> v);")
@@ -44,8 +44,18 @@ class generate_ast():
             self.rm_tab()
             self.writeln("}")
             self.writeln()
-        self.rm_tab()
 
+        # add Visitor Pattern definition
+        self.writeln("public interface Visitor<R> {")
+        self.add_tab()
+        for sub_type in sub_types:
+            tmp = sub_type.split(",", 1)
+            cls_name, field_list = tmp[0], tmp[1]
+            self.writeln("R visit" + cls_name + "(" + cls_name + " expr);")
+        self.rm_tab()
+        self.writeln("}")
+
+        self.rm_tab()
         self.writeln("}")
 
         self.output_file.close()
@@ -86,4 +96,9 @@ if __name__ == "__main__":
             "Unary, Token op, Expr expr",
             "Grouping, Expr expr",
             "Literal, Object val" 
+        ])
+    generate_ast().define_types("../jlox", "Stmt",
+        [
+            "ExprStmt, Expr expr",
+            "PrintStmt, Expr expr"
         ])

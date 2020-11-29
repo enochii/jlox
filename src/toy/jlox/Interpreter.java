@@ -62,6 +62,7 @@ public class ASTEvaluator implements Visitor<Object> {
                 return (double)left * (double)right;
             case SLASH:
                 checkNumberOperands(op, left, right);
+                checkDivisionByZero(op, right);
                 return (double)left / (double)right;
             case BANG_EQUAL:
                 checkNumberOperands(op, left, right);
@@ -107,12 +108,20 @@ public class ASTEvaluator implements Visitor<Object> {
                 + " should has two number operands");
     }
 
+    private void checkDivisionByZero(Token token, Object divisor) {
+        if((double)divisor == 0) {
+            throw new RuntimeError(token, "Division By 0");
+        }
+    }
+
     @Override
     public Object visitUnary(Expr.Unary unary) {
         Object res = evaluate(unary.expr);
-        if(unary.op.tokenType_ == MINUS) {
+        Token op = unary.op;
+        if(op.tokenType_ == MINUS) {
+            checkNumberOperand(op, res);
             return -((double)res);
-        } else if(unary.op.tokenType_ == BANG) {
+        } else if(op.tokenType_ == BANG) {
             return !(isTruthy(res));
         } else {
             return null;
