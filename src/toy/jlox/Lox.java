@@ -1,5 +1,7 @@
 package toy.jlox;
 
+import toy.tool.FileUtils;
+
 import java.util.List;
 
 import static toy.jlox.TokenType.EOF;
@@ -9,7 +11,7 @@ public class Lox {
     // when trigger a error, we will set this
     private static boolean hadError = false;
     private static boolean hadRuntimeError = false;
-    private static ASTEvaluator interpreter = new ASTEvaluator();
+    private static Interpreter interpreter = new Interpreter();
 
     static void error(int line, String message) {
         report(line, "", message);
@@ -38,19 +40,18 @@ public class Lox {
 
     public static void main(String[] args) {
 	// write your code here
-        System.out.println("Hello!");
-        run("1* 2+3*-3");
-        run("1+2");
-        run("\n1-false");
+        String source = FileUtils.readFile("example/test.txt");
+
+        run(source);
     }
 
     static void run(String source) {
+        // scan
         List<Token> tokens = new Scanner(source).scanTokens();
-        Expr expr = new Parser(tokens).expression();
-        ASTPrinter astPrinter = new ASTPrinter();
-        System.out.println(source + " -> " + expr.accept(astPrinter));
-
-        interpreter.interpret(expr);
+        // parse
+        List<Stmt> stmts   = new Parser(tokens).program();
+        // execute
+        interpreter.interpret(stmts);
     }
 
     static void runPrompt() {

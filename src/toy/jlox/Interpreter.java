@@ -1,20 +1,41 @@
 package toy.jlox;
 
+import java.util.List;
+
 import static toy.jlox.TokenType.*;
 
 /**
  * @author : SCH001
  * @description :
  */
-public class ASTEvaluator implements Visitor<Object> {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    @Override
+    public Void visitExprStmt(Stmt.ExprStmt stmt) {
+        evaluate(stmt.expr);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.PrintStmt stmt) {
+        Object val = evaluate(stmt.expr);
+        System.out.println(stringify(val));
+        return null;
+    }
+
     private class RuntimeError extends RuntimeException {
         Token token;
-        String msg;
         RuntimeError(Token token, String msg) {
             super(msg);
             this.token = token;
         }
     }
+
+    public void interpret(List<Stmt> stmts) {
+        for(Stmt stmt: stmts) {
+            execute(stmt);
+        }
+    }
+
     public void interpret(Expr expr) {
         try {
             Object res = evaluate(expr);
@@ -23,6 +44,11 @@ public class ASTEvaluator implements Visitor<Object> {
             Lox.runtimeError(error.token, error.getMessage());
         }
     }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
+    }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }

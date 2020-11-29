@@ -64,4 +64,10 @@ abstract class Expr {
         final Object val;
     }
     
+    public interface Visitor<R> {
+        R visitBinary(Binary expr);
+        R visitUnary(Unary expr);
+        R visitGrouping(Grouping expr);
+        R visitLiteral(Literal expr);
+    }
 }

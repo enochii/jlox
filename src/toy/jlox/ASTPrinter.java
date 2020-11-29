@@ -4,7 +4,7 @@ package toy.jlox;
  * @author : SCH001
  * @description :
  */
-public class ASTPrinter implements Visitor<String> {
+public class ASTPrinter implements Expr.Visitor<String> {
     @Override
     public String visitBinary(Expr.Binary binary) {
         return "(" + binary.op.lexeme_ + " "

@@ -1,5 +1,6 @@
 package toy.jlox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static toy.jlox.TokenType.*;
@@ -14,11 +15,45 @@ public class Parser {
     private List<Token> tokens_;
     // points to the current token
     private int current_;
+    // parsed statements
+    private List<Stmt> stmts_;
 
     Parser(List<Token> tokens) {
         this.tokens_ = tokens;
         this.current_ = 0;
+        this.stmts_ = new ArrayList<>();
     }
+
+    public List<Stmt> program() {
+        while (peek().tokenType_ != EOF) {
+            Stmt stmt = statement();
+            stmts_.add(stmt);
+        }
+        advance(); //EOF
+        return stmts_;
+    }
+
+    public Stmt printStmt() {
+        // the print token has been consumed already
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect a ';' here to end a print statement");
+        return new Stmt.PrintStmt(expr);
+    }
+
+    public Stmt exprStmt() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect a ';' here to end a expression statement");
+        return new Stmt.ExprStmt(expr);
+    }
+
+    public Stmt statement() {
+        if(match(PRINT)) {
+            return printStmt();
+        }
+        return exprStmt();
+    }
+
+
 
     public Expr expression() {
         try {

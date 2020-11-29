@@ -136,8 +136,8 @@ public class Scanner {
             case '!':
                 addToken(
                         match('=')
-                        ? BANG
-                        : BANG_EQUAL
+                        ? BANG_EQUAL
+                        : BANG
                 ); break;
             case '=':
                 addToken(
