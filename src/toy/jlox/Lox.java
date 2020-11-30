@@ -40,7 +40,7 @@ public class Lox {
 
     public static void main(String[] args) {
 	// write your code here
-        String source = FileUtils.readFile("example/test.txt");
+        String source = FileUtils.readFile("example/errors.txt");
 
         run(source);
     }
@@ -51,6 +51,7 @@ public class Lox {
         // parse
         List<Stmt> stmts   = new Parser(tokens).program();
         // execute
+        if(hadError) return;
         interpreter.interpret(stmts);
     }
 

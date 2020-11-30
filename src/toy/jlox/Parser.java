@@ -36,8 +36,12 @@ public class Parser {
      */
     public List<Stmt> program() {
         while (peek().tokenType_ != EOF) {
-            Stmt stmt = declaration();
-            stmts_.add(stmt);
+            try {
+                Stmt stmt = declaration();
+                stmts_.add(stmt);
+            } catch (ParseError error) {
+                synchronize();
+            }
         }
         advance(); //EOF
         return stmts_;
@@ -113,7 +117,7 @@ public class Parser {
         try {
             return assignment();
         } catch (ParseError parseError) {
-            // todo: error recovery, synchronization
+            // todo: error recovery, synchronize
             return null;
         }
     }
@@ -253,6 +257,13 @@ public class Parser {
         return peek().tokenType_ == type;
     }
 
+    private boolean check(TokenType... types) {
+        for (TokenType type: types) {
+            if(check(type)) return true;
+        }
+        return false;
+    }
+
     private Token peek() {
         return tokens_.get(current_);
     }
@@ -268,5 +279,14 @@ public class Parser {
 
     private Token next() {
         return tokens_.get(current_ + 1);
+    }
+
+    private void synchronize() {
+        for (; current_ < tokens_.size(); current_++) {
+            if(match(SEMICOLON)) return;
+
+            if(check(VAR, FOR, LEFT_BRACE)) return;
+        }
+        // or we will reach the end
     }
 }
