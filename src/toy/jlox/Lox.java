@@ -2,6 +2,9 @@ package toy.jlox;
 
 import toy.tool.FileUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import static toy.jlox.TokenType.EOF;
@@ -9,6 +12,7 @@ import static toy.jlox.TokenType.EOF;
 public class Lox {
     // find more errors rather than executing program
     // when trigger a error, we will set this
+    public static boolean repl = false;
     private static boolean hadError = false;
     private static boolean hadRuntimeError = false;
     private static Interpreter interpreter = new Interpreter();
@@ -40,9 +44,10 @@ public class Lox {
 
     public static void main(String[] args) {
 	// write your code here
-        String source = FileUtils.readFile("example/errors.txt");
-
-        run(source);
+//        String source = FileUtils.readFile("example/errors.txt");
+//
+//        run(source);
+        runPrompt();
     }
 
     static void run(String source) {
@@ -56,6 +61,21 @@ public class Lox {
     }
 
     static void runPrompt() {
+        repl = true;
+        while (true) {
+            BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
+            try {
+                String source = strin.readLine();
+                List<Token> tokens = new Scanner(source).scanTokens();
+                // parse
+                List<Stmt> stmts   = new Parser(tokens).program();
+                // execute
+                if(hadError || hadRuntimeError) continue;
+                interpreter.interpret(stmts);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
+        }
     }
 }

@@ -35,7 +35,7 @@ public class Parser {
         // some places we allow the latter but not the former
      */
     public List<Stmt> program() {
-        while (peek().tokenType_ != EOF) {
+        while (!isAtEnd()) {
             try {
                 Stmt stmt = declaration();
                 stmts_.add(stmt);
@@ -65,6 +65,10 @@ public class Parser {
     // we need to consume the semicolon!
     private Stmt exprStmt() {
         Expr expr = expression();
+        if(Lox.repl && !check(SEMICOLON)) {
+            // wrap it so can enable expression in REPL mode!
+            return new Stmt.PrintStmt(expr);
+        }
         consume(SEMICOLON, "Expect a ';' here to end a expression statement");
         return new Stmt.ExprStmt(expr);
     }
@@ -126,14 +130,15 @@ public class Parser {
     // assignment -> (name =) expression
     //              equality
     private Expr assignment() {
-        if(peek().tokenType_ == IDENTIFIER &&
-            next().tokenType_ == EQUAL
-        ) {
-            Token name = advance();
-            advance(); // =
-            return new Expr.Assign(name, expression());
+        Expr expr = equality();
+        if(match(EQUAL)) {
+            if(!(expr instanceof Expr.Variable)) {
+                throw new ParseError();
+            }
+            Expr.Variable name = (Expr.Variable)expr;
+            return new Expr.Assign(name.var, assignment());
         }
-        return equality();
+        return expr;
     }
 
     // equality -> equality (!= | ==) comparison
@@ -285,7 +290,7 @@ public class Parser {
         for (; current_ < tokens_.size(); current_++) {
             if(match(SEMICOLON)) return;
 
-            if(check(VAR, FOR, LEFT_BRACE)) return;
+            if(check(VAR, FOR, LEFT_BRACE, EOF)) return;
         }
         // or we will reach the end
     }
