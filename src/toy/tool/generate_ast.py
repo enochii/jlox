@@ -26,6 +26,7 @@ class generate_ast():
         self.writeln("// this file is generated automatically by running src/toy/tool/generate_ast.py\n")
 
         self.writeln("package toy.jlox;")
+        self.writeln("import java.util.List;")
         self.writeln()
         self.writeln()
         self.writeln("abstract class " + base_class_name + " {")
@@ -104,4 +105,5 @@ if __name__ == "__main__":
             "ExprStmt, Expr expr",
             "PrintStmt, Expr expr",
             "DefinitionStmt, String name, Expr expr",
+            "Block, List<Stmt> stmts",
         ])

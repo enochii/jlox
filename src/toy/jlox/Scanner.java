@@ -99,9 +99,9 @@ public class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
-            case '[':
+            case '{':
                 addToken(LEFT_BRACE);break;
-            case ']':
+            case '}':
                 addToken(RIGHT_BRACE);break;
             case '(':
                 addToken(LEFT_PAREN);break;

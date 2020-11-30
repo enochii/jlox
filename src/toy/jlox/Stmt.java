@@ -3,6 +3,8 @@
 package toy.jlox;
 
 
+import java.util.List;
+
 abstract class Stmt {
     abstract <R> R accept(Visitor<R> v);
     
@@ -47,9 +49,23 @@ abstract class Stmt {
         final Expr expr;
     }
     
+    static class Block extends Stmt {
+        Block(List<Stmt> stmts)        {
+            this.stmts = stmts;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitBlock(this);
+        }
+        
+        final List<Stmt> stmts;
+    }
+    
     public interface Visitor<R> {
         R visitExprStmt(ExprStmt expr);
         R visitPrintStmt(PrintStmt expr);
         R visitDefinitionStmt(DefinitionStmt expr);
+        R visitBlock(Block expr);
     }
 }

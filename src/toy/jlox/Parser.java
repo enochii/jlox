@@ -33,8 +33,6 @@ public class Parser {
         // distinct the declaration and non-declaring statement
         // to disable things like "if() var x = 1;"
         // some places we allow the latter but not the former
-        declaration -> varDeclaration
-                    |  statement
      */
     public List<Stmt> program() {
         while (peek().tokenType_ != EOF) {
@@ -45,8 +43,10 @@ public class Parser {
         return stmts_;
     }
 
+
     private Stmt declaration() {
         if(match(VAR)) return definitionStmt();
+
         return statement();
     }
 
@@ -57,6 +57,8 @@ public class Parser {
         return new Stmt.PrintStmt(expr);
     }
 
+    // this should be very helpful for assignment(because it's actually a expression rather than a statement)
+    // we need to consume the semicolon!
     private Stmt exprStmt() {
         Expr expr = expression();
         consume(SEMICOLON, "Expect a ';' here to end a expression statement");
@@ -78,9 +80,29 @@ public class Parser {
         throw error(peek(), "Invalid Definition");
     }
 
+    // collect statements in the block
+    // declaration rather than statement means that
+    // variable declaration is allowed!
+    // block -> { declaration* }
+    private List<Stmt> block() {
+        List<Stmt> stmts = new ArrayList<>();
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
+            stmts.add(declaration());
+        }
+        consume(RIGHT_BRACE, "Expect a '}' to end block");
+        return stmts;
+    }
+
+    // statement -> printStmt
+    //              exprStmt
+    //              block
     private Stmt statement() {
         if(match(PRINT)) {
             return printStmt();
+        }
+        // the block one
+        if(match(LEFT_BRACE)) {
+            return new Stmt.Block(block());
         }
         return exprStmt();
     }
@@ -226,6 +248,11 @@ public class Parser {
     private boolean isAtEnd() {
         return peek().tokenType_ == EOF;
     }
+
+    private boolean check(TokenType type) {
+        return peek().tokenType_ == type;
+    }
+
     private Token peek() {
         return tokens_.get(current_);
     }

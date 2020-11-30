@@ -11,3 +11,10 @@ print b;
 b=a=1;
 print b;
 print a;
+a = "outer";
+// scope testing
+{
+    var a = "inner";
+    print a;
+}
+print a;

@@ -38,6 +38,26 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
+    private void executeBlock(Stmt.Block block, Environment curEnv) {
+        Environment previous = env_;
+
+        try {
+            env_ = curEnv;
+            for(Stmt stmt: block.stmts) {
+                execute(stmt);
+            }
+        } finally {
+            env_ = previous;
+        }
+    }
+
+    @Override
+    public Void visitBlock(Stmt.Block block) {
+        // todo
+        executeBlock(block, new Environment(env_));
+        return null;
+    }
+
     static class RuntimeError extends RuntimeException {
         Token token;
         RuntimeError(Token token, String msg) {
