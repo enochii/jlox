@@ -106,4 +106,7 @@ if __name__ == "__main__":
             "PrintStmt, Expr expr",
             "DefinitionStmt, String name, Expr expr",
             "Block, List<Stmt> stmts",
+            "IfStmt, Expr cond, Stmt thenBranch, Stmt elseBranch",
+            "WhileStmt, Expr cond, Stmt body",
+            "ForStmt, Stmt init, Expr expr, "
         ])

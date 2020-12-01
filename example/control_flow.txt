@@ -1,0 +1,19 @@
+if(1 < 2) {
+    print "1<2";
+}
+
+if(1 < 2) {
+    print "1<2";
+} else {
+    print "??";
+}
+
+if(false) {
+
+}
+
+var i = 1;
+while(i<5) {
+    i = i+1;
+    print i;
+}

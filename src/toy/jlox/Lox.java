@@ -44,10 +44,10 @@ public class Lox {
 
     public static void main(String[] args) {
 	// write your code here
-//        String source = FileUtils.readFile("example/errors.txt");
-//
-//        run(source);
-        runPrompt();
+        String source = FileUtils.readFile("example/control_flow.txt");
+
+        run(source);
+//        runPrompt();
     }
 
     static void run(String source) {

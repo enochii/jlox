@@ -58,6 +58,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitIfStmt(Stmt.IfStmt expr) {
+        boolean res = isTruthy(evaluate(expr.cond));
+        if(res) {
+            execute(expr.thenBranch);
+        } else if(expr.elseBranch != null){
+            execute(expr.elseBranch);
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitWhileStmt(Stmt.WhileStmt expr) {
+        while (isTruthy(evaluate(expr.cond))) {
+            execute(expr.body);
+        }
+        return null;
+    }
+
     static class RuntimeError extends RuntimeException {
         Token token;
         RuntimeError(Token token, String msg) {

@@ -1,6 +1,7 @@
 // this file is generated automatically by running src/toy/tool/generate_ast.py
 
 package toy.jlox;
+import java.util.List;
 
 
 abstract class Expr {

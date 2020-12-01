@@ -101,9 +101,31 @@ public class Parser {
         return stmts;
     }
 
+    private Stmt.IfStmt ifStmt() {
+        consume(LEFT_PAREN, "Expect a '('");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect a ')'");
+        Stmt thenBranch = statement();
+        Stmt elseBranch = null;
+        if(match(ELSE)) {
+            elseBranch = statement();
+        }
+        return new Stmt.IfStmt(condition, thenBranch, elseBranch);
+    }
+
+    private Stmt.WhileStmt whileStmt() {
+        consume(LEFT_PAREN, "Expect a '('");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect a ')'");
+
+        Stmt body = statement();
+        return new Stmt.WhileStmt(condition, body);
+    }
+
     // statement -> printStmt
     //              exprStmt
     //              block
+    //              ifStmt
     private Stmt statement() {
         if(match(PRINT)) {
             return printStmt();
@@ -111,6 +133,13 @@ public class Parser {
         // the block one
         if(match(LEFT_BRACE)) {
             return new Stmt.Block(block());
+        }
+
+        if(match(IF)) {
+            return ifStmt();
+        }
+        if(match(WHILE)) {
+            return whileStmt();
         }
         return exprStmt();
     }
