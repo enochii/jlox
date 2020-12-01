@@ -135,9 +135,18 @@ public class Parser {
         } else if(!match(SEMICOLON)) {
             init = exprStmt();
         }
-        Expr condition = expression();
+
+        // empty condition means Always TRUE
+        Expr condition = new Expr.Literal(true);
+        if(!check(SEMICOLON)) {
+            condition = expression();
+        }
         consume(SEMICOLON, "Expect a ';'");
-        Expr increment = expression();
+
+        Expr increment = null;
+        if(!check(RIGHT_PAREN)) {
+            increment = expression();
+        }
         consume(RIGHT_PAREN, "Expect a ')'");
 
         Stmt body = statement();
@@ -153,7 +162,9 @@ public class Parser {
                 }
             }
          */
-        Stmt.Block whileBody = createBlock(body, new Stmt.ExprStmt(increment));
+        Stmt whileBody = increment==null ?
+                body :
+                createBlock(body, new Stmt.ExprStmt(increment));
 
         Stmt whileStmt = new Stmt.WhileStmt(
                 condition, whileBody
