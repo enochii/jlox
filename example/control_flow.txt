@@ -17,3 +17,18 @@ while(i<5) {
     i = i+1;
     print i;
 }
+
+println nil or 1; // 1
+println "hello sch" or 1; // "hello sch"
+println nil and 2; // nil
+println 1 and 2; // 2
+
+print "double for loop";
+for(var i=1; i<5; i = i+1)
+    for(var j=1; j<5; j = j+1) {
+        print "(";
+        print i;
+        print " ";
+        print j;
+        println ")";
+    }

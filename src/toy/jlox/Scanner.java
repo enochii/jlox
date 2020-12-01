@@ -40,6 +40,7 @@ public class Scanner {
         keywords_.put("nil", NIL);
         keywords_.put("or", OR);
         keywords_.put("print", PRINT);
+        keywords_.put("println", PRINTLN);
         keywords_.put("return", RETURN);
         keywords_.put("super", SUPER);
         keywords_.put("this", THIS);

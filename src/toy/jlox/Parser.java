@@ -1,6 +1,7 @@
 package toy.jlox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static toy.jlox.TokenType.*;
@@ -56,9 +57,10 @@ public class Parser {
 
     private Stmt printStmt() {
         // the print token has been consumed already
+        Token action = previous();
         Expr expr = expression();
         consume(SEMICOLON, "Expect a ';' here to end a print statement");
-        return new Stmt.PrintStmt(expr);
+        return new Stmt.PrintStmt(action.tokenType_==PRINTLN, expr);
     }
 
     // this should be very helpful for assignment(because it's actually a expression rather than a statement)
@@ -67,7 +69,7 @@ public class Parser {
         Expr expr = expression();
         if(Lox.repl && !check(SEMICOLON)) {
             // wrap it so can enable expression in REPL mode!
-            return new Stmt.PrintStmt(expr);
+            return new Stmt.PrintStmt(true, expr);
         }
         consume(SEMICOLON, "Expect a ';' here to end a expression statement");
         return new Stmt.ExprStmt(expr);
@@ -122,12 +124,55 @@ public class Parser {
         return new Stmt.WhileStmt(condition, body);
     }
 
+    // syntax sugar
+    // forStmt -> FOR((definitionStmt | expressionStmt |;) expression ; expression) statement
+    private Stmt forStmt() {
+        consume(LEFT_PAREN, "Expect a '('");
+        // initializer
+        Stmt init = null;
+        if(match(VAR)) {
+            init = definitionStmt();
+        } else if(!match(SEMICOLON)) {
+            init = exprStmt();
+        }
+        Expr condition = expression();
+        consume(SEMICOLON, "Expect a ';'");
+        Expr increment = expression();
+        consume(RIGHT_PAREN, "Expect a ')'");
+
+        Stmt body = statement();
+
+        // sugar!
+        // for(var i=0; i<5; i=i+1) stmt;
+        /*
+            {
+                var i = 0;
+                while(i<5) {
+                    stmt;
+                    i=i+1;
+                }
+            }
+         */
+        Stmt.Block whileBody = createBlock(body, new Stmt.ExprStmt(increment));
+
+        Stmt whileStmt = new Stmt.WhileStmt(
+                condition, whileBody
+        );
+        if(init != null) {
+            whileStmt = createBlock(init, whileStmt);
+        }
+
+        return whileStmt;
+    }
+
     // statement -> printStmt
     //              exprStmt
     //              block
     //              ifStmt
+    //              forStmt
+    //              whileStmt
     private Stmt statement() {
-        if(match(PRINT)) {
+        if(match(PRINT, PRINTLN)) {
             return printStmt();
         }
         // the block one
@@ -141,25 +186,23 @@ public class Parser {
         if(match(WHILE)) {
             return whileStmt();
         }
+        if(match(FOR)) {
+            return forStmt();
+        }
         return exprStmt();
     }
 
 
     // Expressions
     private Expr expression() {
-        try {
-            return assignment();
-        } catch (ParseError parseError) {
-            // todo: error recovery, synchronize
-            return null;
-        }
+        return assignment();
     }
 
     // expression -> assignment
     // assignment -> (name =) expression
     //              equality
     private Expr assignment() {
-        Expr expr = equality();
+        Expr expr = or();
         if(match(EQUAL)) {
             if(!(expr instanceof Expr.Variable)) {
                 throw new ParseError();
@@ -168,6 +211,32 @@ public class Parser {
             return new Expr.Assign(name.var, assignment());
         }
         return expr;
+    }
+
+    // or -> and (OR and)*
+    /*
+        if the production is like: or -> and (OR or)*,
+        then the operator is right-associate ?
+     */
+    private Expr or() {
+        Expr left = and();
+        while (match(OR)) {
+            Token op = previous();
+            Expr right = and();
+            left = new Expr.Logical(left, op, right);
+        }
+        return left;
+    }
+
+    // and -> equality (AND equality)*
+    private Expr and() {
+        Expr left = equality();
+        while (match(AND)) {
+            Token op = previous();
+            Expr right = equality();
+            left = new Expr.Logical(left, op, right);
+        }
+        return left;
     }
 
     // equality -> equality (!= | ==) comparison
@@ -254,6 +323,12 @@ public class Parser {
     ParseError error(Token token, String msg) {
         Lox.error(token, msg);
         return new ParseError();
+    }
+
+    // create block
+    Stmt.Block createBlock(Stmt... stmts) {
+        List<Stmt> stmtList = new ArrayList<>(Arrays.asList(stmts));
+        return new Stmt.Block(stmtList);
     }
 
     // consume the appointed token type, or else

@@ -41,4 +41,11 @@ public class ASTPrinter implements Expr.Visitor<String> {
     public String visitVariable(Expr.Variable expr) {
         return expr.var.toString();
     }
+
+    @Override
+    public String visitLogical(Expr.Logical logical) {
+        return "(" + logical.op.lexeme_ + " "
+                + print(logical.left) + " "
+                + print(logical.right) + ")";
+    }
 }

@@ -98,15 +98,16 @@ if __name__ == "__main__":
             "Unary, Token op, Expr expr",
             "Grouping, Expr expr",
             "Literal, Object val",
-            "Variable, Token var"
+            "Variable, Token var",
+            "Logical, Expr left, Token op, Expr right",
         ])
     generate_ast().define_types("../jlox", "Stmt",
         [
             "ExprStmt, Expr expr",
-            "PrintStmt, Expr expr",
+            "PrintStmt, boolean newline, Expr expr",
             "DefinitionStmt, String name, Expr expr",
             "Block, List<Stmt> stmts",
             "IfStmt, Expr cond, Stmt thenBranch, Stmt elseBranch",
             "WhileStmt, Expr cond, Stmt body",
-            "ForStmt, Stmt init, Expr expr, "
+            # "ForStmt, Stmt init, Expr cond, Expr incr, Stmt body"
         ])

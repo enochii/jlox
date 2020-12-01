@@ -24,7 +24,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitPrintStmt(Stmt.PrintStmt stmt) {
         Object val = evaluate(stmt.expr);
-        System.out.println(stringify(val));
+        String str = stringify(val);
+        if(stmt.newline) {
+            System.out.println(str);
+        } else {
+            System.out.print(str);
+        }
         return null;
     }
 
@@ -241,5 +246,18 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitVariable(Expr.Variable expr) {
         return env_.get(expr.var);
+    }
+
+    @Override
+    public Object visitLogical(Expr.Logical logical) {
+        Object left = evaluate(logical.left);
+        if(logical.op.tokenType_ == OR) {
+            if(!isTruthy(left))
+                return evaluate(logical.right);
+        } else if(logical.op.tokenType_ == AND) {
+            if(isTruthy(left))
+                return evaluate(logical.right);
+        }
+        return left;
     }
 }

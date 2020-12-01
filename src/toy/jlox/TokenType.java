@@ -12,7 +12,7 @@ public enum TokenType {
     IDENTIFIER, STRING, NUM,
 
     AND, CLASS, ELSE, FALSE, FUN,
-    FOR, IF, NIL, OR, PRINT, RETURN,
+    FOR, IF, NIL, OR, PRINT, PRINTLN, RETURN,
     SUPER, THIS, TRUE, VAR, WHILE,
 
     EOF

@@ -21,7 +21,8 @@ abstract class Stmt {
     }
     
     static class PrintStmt extends Stmt {
-        PrintStmt(Expr expr)        {
+        PrintStmt(boolean newline, Expr expr)        {
+            this.newline = newline;
             this.expr = expr;
         }
         
@@ -30,6 +31,7 @@ abstract class Stmt {
             return v.visitPrintStmt(this);
         }
         
+        final boolean newline;
         final Expr expr;
     }
     
