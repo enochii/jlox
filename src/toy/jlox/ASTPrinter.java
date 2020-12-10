@@ -48,4 +48,15 @@ public class ASTPrinter implements Expr.Visitor<String> {
                 + print(logical.left) + " "
                 + print(logical.right) + ")";
     }
+
+    @Override
+    public String visitCall(Expr.Call expr) {
+        StringBuilder ret = new StringBuilder(print(expr.callee) + "(");
+        if (expr.args != null)
+            for(Expr expr1:expr.args) {
+                ret.append(print(expr1)+", ");
+            }
+        ret.append(")");
+        return ret.toString();
+    }
 }

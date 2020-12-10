@@ -306,7 +306,38 @@ public class Parser {
             // recursion
             return new Expr.Unary(op, unary());
         }
-        return primary();
+        return call();
+    }
+
+    private Expr call() {
+        Expr callee = primary();
+        while(match(LEFT_PAREN)) {
+            List<Expr> args = null;
+            if(check(RIGHT_PAREN)) {
+                // empty argument list
+            } else {
+                args = arguments();
+            }
+            Token paren = consume(RIGHT_PAREN, "Expect a ')' for a call");
+            // I think the parameter-limit check should have just handled in
+            // function definition??
+            if(args != null && args.size() > Const.MAX_ARGUMENT_SIZE) {
+                // not throw so no panic mode
+                // the parsing dont need sync!
+                error(paren, "number of argument should not be larger than "
+                        + Const.MAX_ARGUMENT_SIZE);
+            }
+            callee = new Expr.Call(callee, args, paren);
+        }
+        return callee;
+    }
+
+    private List<Expr> arguments() {
+        List<Expr> args = new ArrayList<>();
+        do {
+            args.add(expression());
+        } while(match(COMMA));
+        return args;
     }
 
     // literal
@@ -344,10 +375,11 @@ public class Parser {
 
     // consume the appointed token type, or else
     // raise an exception
-    private void consume(TokenType type, String msg) {
+    private Token consume(TokenType type, String msg) {
         if(!match(type)) {
             throw error(peek(), msg);
         }
+        return previous();
     }
 
     // helper methods

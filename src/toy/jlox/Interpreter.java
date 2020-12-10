@@ -260,4 +260,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
         return left;
     }
+
+    @Override
+    public Object visitCall(Expr.Call call) {
+        System.out.print(new ASTPrinter().visitCall(call));
+        return null;
+    }
 }
