@@ -1,6 +1,18 @@
-var a = 2;
+var a = "global a";
 {
-    // it should have reported an error
-    var a = a + 10;
-    print a;
+    // currently by the code  below in LoxFunction.call()
+    // Environment funcEnv = new Environment(interpreter.globals_);
+    // we have static scope without closure support!
+
+    var a = "local a";
+    fun f() {
+        println a; // global
+    }
+    f();
+    println a; // local
+
+    {
+        var a = "local a-2";
+        f(); // global
+    }
 }

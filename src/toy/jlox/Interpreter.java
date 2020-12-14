@@ -15,7 +15,7 @@ import static toy.jlox.TokenType.*;
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     // variables bindings
     final Environment globals_ = new Environment();
-    private Environment env_ = globals_;
+    Environment env_ = globals_;
 
     Interpreter() {
         // native function
