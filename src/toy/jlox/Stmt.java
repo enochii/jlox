@@ -35,19 +35,36 @@ abstract class Stmt {
         final Expr expr;
     }
     
-    static class DefinitionStmt extends Stmt {
-        DefinitionStmt(String name, Expr expr)        {
+    static class VarDecl extends Stmt {
+        VarDecl(String name, Expr expr)        {
             this.name = name;
             this.expr = expr;
         }
         
         @Override
         <R> R accept(Visitor<R> v) {
-            return v.visitDefinitionStmt(this);
+            return v.visitVarDecl(this);
         }
         
         final String name;
         final Expr expr;
+    }
+    
+    static class FuncDecl extends Stmt {
+        FuncDecl(Token name, List<String> parameters, Block body)        {
+            this.name = name;
+            this.parameters = parameters;
+            this.body = body;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitFuncDecl(this);
+        }
+        
+        final Token name;
+        final List<String> parameters;
+        final Block body;
     }
     
     static class Block extends Stmt {
@@ -98,7 +115,8 @@ abstract class Stmt {
     public interface Visitor<R> {
         R visitExprStmt(ExprStmt expr);
         R visitPrintStmt(PrintStmt expr);
-        R visitDefinitionStmt(DefinitionStmt expr);
+        R visitVarDecl(VarDecl expr);
+        R visitFuncDecl(FuncDecl expr);
         R visitBlock(Block expr);
         R visitIfStmt(IfStmt expr);
         R visitWhileStmt(WhileStmt expr);

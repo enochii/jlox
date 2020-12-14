@@ -1,8 +1,10 @@
 package toy.jlox;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import static toy.jlox.TokenType.*;
 
@@ -12,8 +14,23 @@ import static toy.jlox.TokenType.*;
  */
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     // variables bindings
-//    private Map<String, Object> bindings_ = new HashMap<>();
-    Environment env_ = new Environment();
+    final Environment globals_ = new Environment();
+    private Environment env_ = globals_;
+
+    Interpreter() {
+        // native function
+        globals_.define("clock", new LoxCallable() {
+            @Override
+            public Object call(Interpreter interpreter, List<Object> args) {
+                return System.currentTimeMillis() / 1000;
+            }
+
+            @Override
+            public int arity() {
+                return 0;
+            }
+        });
+    }
 
     @Override
     public Void visitExprStmt(Stmt.ExprStmt stmt) {
@@ -34,7 +51,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitDefinitionStmt(Stmt.DefinitionStmt stmt) {
+    public Void visitVarDecl(Stmt.VarDecl stmt) {
         Object res = null;
         if(stmt.expr != null) {
             res = evaluate(stmt.expr);
@@ -43,7 +60,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
-    private void executeBlock(Stmt.Block block, Environment curEnv) {
+    @Override
+    public Void visitFuncDecl(Stmt.FuncDecl stmt) {
+        LoxFunction loxFunction = new LoxFunction(stmt);
+
+        env_.define(stmt.name.lexeme_, loxFunction);
+        return null;
+    }
+
+    void executeBlock(Stmt.Block block, Environment curEnv) {
         Environment previous = env_;
 
         try {
@@ -263,7 +288,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitCall(Expr.Call call) {
-        System.out.print(new ASTPrinter().visitCall(call));
+        Object callee = evaluate(call.callee);
+        if(!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(call.token, call.callee
+                    + " is not a callable object!");
+        }
+
+        LoxCallable func = (LoxCallable) callee;
+
+        if(func.arity() != call.args.size()) {
+            throw new RuntimeError(call.token,
+                    "the number of parameter and arguments not matched");
+        }
+
+        List<Object> args = new ArrayList<>();
+        for(int i=0; i<call.args.size(); i++) {
+            args.add(evaluate(call.args.get(i)));
+        }
+        func.call(this, args);
         return null;
     }
 }

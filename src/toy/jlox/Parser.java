@@ -28,7 +28,7 @@ public class Parser {
     /*
         program -> declaration* EOF
 
-        declaration -> definitionStmt
+        declaration -> VarDecl
                     |  statement
 
         // distinct the declaration and non-declaring statement
@@ -50,7 +50,8 @@ public class Parser {
 
 
     private Stmt declaration() {
-        if(match(VAR)) return definitionStmt();
+        if(match(VAR)) return varDecl();
+        if(match(FUN)) return funcDecl();
 
         return statement();
     }
@@ -75,7 +76,44 @@ public class Parser {
         return new Stmt.ExprStmt(expr);
     }
 
-    private Stmt definitionStmt() {
+    private Stmt funcDecl() {
+        // "fun" token has been eaten
+        if(match(IDENTIFIER)) {
+            Token name = previous();
+            consume(LEFT_PAREN,
+                    "Expect a '(' for function definition");
+            List<String> parameters = null;
+            if(!check(RIGHT_PAREN)) {
+                parameters = paras();
+            } else {
+                parameters = new ArrayList<>();
+            }
+            consume(RIGHT_PAREN,
+                    "Expect a ')' for function definition");
+            consume(LEFT_BRACE,
+                    "Expect a '{' for function definition");
+            Stmt.Block body = new Stmt.Block(block());
+
+            return new Stmt.FuncDecl(name, parameters, body);
+        }
+        throw error(peek(), "Expect a ID for function name");
+    }
+
+    // collect the parameters for function definition
+    private List<String> paras() {
+        List<String> ps = new ArrayList<>();
+        do {
+            Token p = peek();
+            if(match(IDENTIFIER)) {
+                ps.add(p.lexeme_);
+            } else {
+                throw error(p, "Expect a parameter name");
+            }
+        } while(match(COMMA));
+        return ps;
+    }
+
+    private Stmt varDecl() {
         // var token has been consumed
         if(match(IDENTIFIER)) {
             Token var = previous();
@@ -85,9 +123,9 @@ public class Parser {
                 rvalue = expression();
             }
             consume(SEMICOLON, "Expect a ';' here");
-            return new Stmt.DefinitionStmt(var.lexeme_, rvalue);
+            return new Stmt.VarDecl(var.lexeme_, rvalue);
         }
-        throw error(peek(), "Invalid Definition");
+        throw error(peek(), "Expect a ID for variable name");
     }
 
     // collect statements in the block
@@ -125,13 +163,13 @@ public class Parser {
     }
 
     // syntax sugar
-    // forStmt -> FOR((definitionStmt | expressionStmt |;) expression ; expression) statement
+    // forStmt -> FOR((VarDecl | expressionStmt |;) expression ; expression) statement
     private Stmt forStmt() {
         consume(LEFT_PAREN, "Expect a '('");
         // initializer
         Stmt init = null;
         if(match(VAR)) {
-            init = definitionStmt();
+            init = varDecl();
         } else if(!match(SEMICOLON)) {
             init = exprStmt();
         }
@@ -315,6 +353,7 @@ public class Parser {
             List<Expr> args = null;
             if(check(RIGHT_PAREN)) {
                 // empty argument list
+                args = new ArrayList<>();
             } else {
                 args = arguments();
             }
