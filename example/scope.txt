@@ -1,18 +1,23 @@
 var a = "global a";
 {
     // currently by the code  below in LoxFunction.call()
-    // Environment funcEnv = new Environment(interpreter.globals_);
-    // we have static scope without closure support!
+    // Environment funcEnv = new Environment(interpreter.env_);
+    // we have dynamic scope! Eww~
 
     var a = "local a";
     fun f() {
-        println a; // global
+        println a;
     }
-    f();
-    println a; // local
+    f();       // local a
+    println a; // local a
 
     {
         var a = "local a-2";
-        f(); // global
+        f(); // local a-2
     }
 }
+
+// output:
+// local a
+// local a
+// local a-2

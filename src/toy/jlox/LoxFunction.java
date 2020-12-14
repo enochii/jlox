@@ -19,7 +19,7 @@ public class LoxFunction implements LoxCallable {
         // instead we get a dynamic scope...
         // if we want a static scope with closure, we need to bind the env
         // at the function-declaration point as the enclosing env here!
-        Environment funcEnv = new Environment(interpreter.globals_);
+        Environment funcEnv = new Environment(interpreter.env_);
 
         for(int i=0; i<args.size(); i++) {
             funcEnv.define(
