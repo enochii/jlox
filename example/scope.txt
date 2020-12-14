@@ -6,13 +6,18 @@ var a = "global a";
 
     var a = "local a";
     fun f() {
-        println a; // global
+        println a;
     }
-    f();
-    println a; // local
+    f();        // global a
+    println a;  // local a
 
     {
         var a = "local a-2";
-        f(); // global
+        f();    // global a
     }
 }
+
+// output:
+//  global a
+//  local a
+//  global a
