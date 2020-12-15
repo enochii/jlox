@@ -102,9 +102,32 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitWhileStmt(Stmt.WhileStmt expr) {
         while (isTruthy(evaluate(expr.cond))) {
-            execute(expr.body);
+            try {
+                execute(expr.body);
+            } catch (BreakExceptoin e) {
+                debug("catch a break exception");
+                break;
+            } catch (ContinueException e) {
+                debug("catch a continue exception");
+                // and then do nothing
+            }
         }
         return null;
+    }
+
+    @Override
+    public Void visitBreakStmt(Stmt.BreakStmt expr) {
+        throw new BreakExceptoin();
+    }
+
+    @Override
+    public Void visitContinueStmt(Stmt.ContinueStmt expr) {
+        throw new ContinueException();
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.ReturnStmt expr) {
+        throw new ReturnException();
     }
 
     static class RuntimeError extends RuntimeException {
@@ -307,5 +330,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
         func.call(this, args);
         return null;
+    }
+
+    static class BreakExceptoin extends RuntimeException {
+    }
+
+    static class ReturnException extends RuntimeException {
+    }
+
+    static class ContinueException extends RuntimeException {
+    }
+
+    void debug(String msg) {
+        msg = "[DEBUG]: "+msg;
+        System.out.println(msg);
     }
 }

@@ -111,5 +111,8 @@ if __name__ == "__main__":
             "Block, List<Stmt> stmts",
             "IfStmt, Expr cond, Stmt thenBranch, Stmt elseBranch",
             "WhileStmt, Expr cond, Stmt body",
+            "BreakStmt, Token semicolon",
+            "ContinueStmt, Token semicolon",
+            "ReturnStmt, Token semicolon",
             # "ForStmt, Stmt init, Expr cond, Expr incr, Stmt body"
         ])

@@ -112,6 +112,45 @@ abstract class Stmt {
         final Stmt body;
     }
     
+    static class BreakStmt extends Stmt {
+        BreakStmt(Token semicolon)        {
+            this.semicolon = semicolon;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitBreakStmt(this);
+        }
+        
+        final Token semicolon;
+    }
+    
+    static class ContinueStmt extends Stmt {
+        ContinueStmt(Token semicolon)        {
+            this.semicolon = semicolon;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitContinueStmt(this);
+        }
+        
+        final Token semicolon;
+    }
+    
+    static class ReturnStmt extends Stmt {
+        ReturnStmt(Token semicolon)        {
+            this.semicolon = semicolon;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitReturnStmt(this);
+        }
+        
+        final Token semicolon;
+    }
+    
     public interface Visitor<R> {
         R visitExprStmt(ExprStmt expr);
         R visitPrintStmt(PrintStmt expr);
@@ -120,5 +159,8 @@ abstract class Stmt {
         R visitBlock(Block expr);
         R visitIfStmt(IfStmt expr);
         R visitWhileStmt(WhileStmt expr);
+        R visitBreakStmt(BreakStmt expr);
+        R visitContinueStmt(ContinueStmt expr);
+        R visitReturnStmt(ReturnStmt expr);
     }
 }

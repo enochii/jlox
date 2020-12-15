@@ -214,12 +214,31 @@ public class Parser {
         return whileStmt;
     }
 
+    private Stmt returnStmt() {
+        Token semicolon = consume(SEMICOLON, "Expect a ';' after return");
+        return new Stmt.ReturnStmt(semicolon);
+    }
+
+    private Stmt breakStmt() {
+        Token semicolon = consume(SEMICOLON, "Expect a ';' after break");
+        return new Stmt.BreakStmt(semicolon);
+    }
+
+    private Stmt continueStmt() {
+        Token semicolon = consume(SEMICOLON, "Expect a ';' after continue");
+        return new Stmt.ContinueStmt(semicolon);
+    }
+
     // statement -> printStmt
     //              exprStmt
     //              block
     //              ifStmt
     //              forStmt
     //              whileStmt
+    //              returnStmt
+    //              breakStmt
+    //              continueStmt
+
     private Stmt statement() {
         if(match(PRINT, PRINTLN)) {
             return printStmt();
@@ -238,6 +257,16 @@ public class Parser {
         if(match(FOR)) {
             return forStmt();
         }
+        if(match(RETURN)) {
+            return returnStmt();
+        }
+        if(match(BREAK)) {
+            return breakStmt();
+        }
+        if(match(CONTINUE)) {
+            return continueStmt();
+        }
+
         return exprStmt();
     }
 

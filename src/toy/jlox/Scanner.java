@@ -31,7 +31,9 @@ public class Scanner {
         keywords_ = new HashMap<>();
 
         keywords_.put("and", AND);
+        keywords_.put("break", BREAK);
         keywords_.put("class", CLASS);
+        keywords_.put("continue", CONTINUE);
         keywords_.put("else", ELSE);
         keywords_.put("false", FALSE);
         keywords_.put("fun", FUN);
