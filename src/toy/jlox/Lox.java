@@ -44,7 +44,7 @@ public class Lox {
 
     public static void main(String[] args) {
 	// write your code here
-        String source = FileUtils.readFile("example/continue.txt");
+        String source = FileUtils.readFile("example/return.txt");
 
         run(source);
 //        runPrompt();

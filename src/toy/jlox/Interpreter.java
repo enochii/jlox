@@ -16,6 +16,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     // variables bindings
     final Environment globals_ = new Environment();
     Environment env_ = globals_;
+    private Object callRes_ = null;
 
     Interpreter() {
         // native function
@@ -126,7 +127,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitReturnStmt(Stmt.ReturnStmt expr) {
+    public Void visitReturnStmt(Stmt.ReturnStmt stmt) {
+        if(stmt.expr != null) {
+            callRes_ = evaluate(stmt.expr);
+        } else {
+            callRes_ = null;
+        }
         throw new ReturnException();
     }
 
@@ -328,7 +334,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         for(int i=0; i<call.args.size(); i++) {
             args.add(evaluate(call.args.get(i)));
         }
-        func.call(this, args);
+        try {
+            func.call(this, args);
+        } catch (ReturnException e) {
+            // this value will be set by return statement
+            return callRes_;
+        }
         return null;
     }
 

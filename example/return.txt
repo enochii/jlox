@@ -1,0 +1,5 @@
+fun f(a) {
+    return a*10;
+}
+
+println(f(10));

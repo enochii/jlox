@@ -139,7 +139,8 @@ abstract class Stmt {
     }
     
     static class ReturnStmt extends Stmt {
-        ReturnStmt(Token semicolon)        {
+        ReturnStmt(Expr expr, Token semicolon)        {
+            this.expr = expr;
             this.semicolon = semicolon;
         }
         
@@ -148,6 +149,7 @@ abstract class Stmt {
             return v.visitReturnStmt(this);
         }
         
+        final Expr expr;
         final Token semicolon;
     }
     

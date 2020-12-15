@@ -215,8 +215,9 @@ public class Parser {
     }
 
     private Stmt returnStmt() {
+        Expr expr = expression();
         Token semicolon = consume(SEMICOLON, "Expect a ';' after return");
-        return new Stmt.ReturnStmt(semicolon);
+        return new Stmt.ReturnStmt(expr, semicolon);
     }
 
     private Stmt breakStmt() {

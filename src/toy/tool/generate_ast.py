@@ -113,6 +113,6 @@ if __name__ == "__main__":
             "WhileStmt, Expr cond, Stmt body",
             "BreakStmt, Token semicolon",
             "ContinueStmt, Token semicolon",
-            "ReturnStmt, Token semicolon",
+            "ReturnStmt, Expr expr, Token semicolon",
             # "ForStmt, Stmt init, Expr cond, Expr incr, Stmt body"
         ])
