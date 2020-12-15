@@ -2,4 +2,9 @@ fun f(a) {
     return a*10;
 }
 
+fun f1() {
+    return;
+}
+
 println(f(10));
+println(f1());
