@@ -8,3 +8,11 @@ fun f1() {
 
 println(f(10));
 println(f1());
+
+// fib's definition will be in the global env
+fun fib(i) {
+    if(i == 0 or i == 1) return 1;
+    return i * fib(i-1);
+}
+
+println(fib(6));

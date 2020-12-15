@@ -8,9 +8,11 @@ import java.util.List;
  */
 // user defined function wrapper
 public class LoxFunction implements LoxCallable {
-    private Stmt.FuncDecl function;
-    LoxFunction(Stmt.FuncDecl FuncDecl) {
+    final Stmt.FuncDecl function;
+    final Environment enclosing;
+    LoxFunction(Stmt.FuncDecl FuncDecl, Environment enclosing) {
         this.function = FuncDecl;
+        this.enclosing = enclosing;
     }
 
     @Override
@@ -19,7 +21,7 @@ public class LoxFunction implements LoxCallable {
         // instead we get a dynamic scope...
         // if we want a static scope with closure, we need to bind the env
         // at the function-declaration point as the enclosing env here!
-        Environment funcEnv = new Environment(interpreter.globals_);
+        Environment funcEnv = new Environment(enclosing);
 
         for(int i=0; i<args.size(); i++) {
             funcEnv.define(
