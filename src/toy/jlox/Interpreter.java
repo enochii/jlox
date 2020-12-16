@@ -13,6 +13,7 @@ import static toy.jlox.TokenType.*;
  * @description :
  */
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    private final Map<Expr, Integer> lexicalAddr = new HashMap<>();
     // variables bindings
     final Environment globals_ = new Environment();
     Environment env_ = globals_;
@@ -32,6 +33,17 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
         });
     }
+
+    // lexical address related methods
+    void resolve(Expr expr, Integer dist) {
+        lexicalAddr.put(expr, dist);
+    }
+
+    private Object lookupVariable(Expr.Variable var) {
+        int dist = lexicalAddr.get(var);
+        return env_.getAt(dist, var.var);
+    }
+    // end
 
     @Override
     public Void visitExprStmt(Stmt.ExprStmt stmt) {
@@ -57,7 +69,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if(stmt.expr != null) {
             res = evaluate(stmt.expr);
         }
-        env_.define(stmt.name, res);
+        env_.define(stmt.name.lexeme_, res);
         return null;
     }
 
@@ -262,7 +274,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if(expr.newVal != null) {
             res = evaluate(expr.newVal);
         }
-        env_.assign(token, res);
+        int dist = lexicalAddr.get(expr);
+        env_.assignAt(dist, token, res);
         return res;
     }
 
@@ -299,7 +312,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVariable(Expr.Variable expr) {
-        return env_.get(expr.var);
+        return lookupVariable(expr);
     }
 
     @Override

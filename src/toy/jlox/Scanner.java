@@ -119,7 +119,11 @@ public class Scanner {
                 // seems like its more elegant to do it in parser...
                 addToken(MINUS); break;
             case '+':
-                addToken(PLUS);break;
+                addToken(
+                        match('+')
+                        ? PLUS_PLUS
+                        : PLUS
+                );break;
             case ';':
                 addToken(SEMICOLON);break;
             case '*':

@@ -82,7 +82,7 @@ public class Parser {
             Token name = previous();
             consume(LEFT_PAREN,
                     "Expect a '(' for function definition");
-            List<String> parameters = null;
+            List<Token> parameters = null;
             if(!check(RIGHT_PAREN)) {
                 parameters = paras();
             } else {
@@ -100,12 +100,12 @@ public class Parser {
     }
 
     // collect the parameters for function definition
-    private List<String> paras() {
-        List<String> ps = new ArrayList<>();
+    private List<Token> paras() {
+        List<Token> ps = new ArrayList<>();
         do {
             Token p = peek();
             if(match(IDENTIFIER)) {
-                ps.add(p.lexeme_);
+                ps.add(p);
             } else {
                 throw error(p, "Expect a parameter name");
             }
@@ -123,7 +123,7 @@ public class Parser {
                 rvalue = expression();
             }
             consume(SEMICOLON, "Expect a ';' here");
-            return new Stmt.VarDecl(var.lexeme_, rvalue);
+            return new Stmt.VarDecl(var, rvalue);
         }
         throw error(peek(), "Expect a ID for variable name");
     }
@@ -393,7 +393,7 @@ public class Parser {
             Token paren = consume(RIGHT_PAREN, "Expect a ')' for a call");
             // I think the parameter-limit check should have just handled in
             // function definition??
-            if(args != null && args.size() > Const.MAX_ARGUMENT_SIZE) {
+            if(args.size() > Const.MAX_ARGUMENT_SIZE) {
                 // not throw so no panic mode
                 // the parsing dont need sync!
                 error(paren, "number of argument should not be larger than "

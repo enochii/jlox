@@ -1,5 +1,10 @@
-fun scope(a) {
-  var a = "local";
-}
+var c = "global";
+{
+    fun scope(a) {
+      // var a = "local";
+       println(a);
+       println(c);
+    }
 
-scope("outside");
+    scope("outside");
+}

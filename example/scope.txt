@@ -4,13 +4,13 @@ var a = "global a";
     // Environment funcEnv = new Environment(interpreter.globals_);
     // we have static scope without closure support!
 
-    var a = "local a";
     fun f() {
         println a;
     }
     f();        // global a
-    println a;  // local a
 
+    var a = "local a";
+    f();
     {
         var a = "local a-2";
         f();    // global a

@@ -25,7 +25,7 @@ public class LoxFunction implements LoxCallable {
 
         for(int i=0; i<args.size(); i++) {
             funcEnv.define(
-                    function.parameters.get(i),
+                    function.parameters.get(i).lexeme_,
                     args.get(i)
             );
         }

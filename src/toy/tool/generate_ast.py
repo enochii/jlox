@@ -106,8 +106,8 @@ if __name__ == "__main__":
         [
             "ExprStmt, Expr expr",
             "PrintStmt, boolean newline, Expr expr",
-            "VarDecl, String name, Expr expr",
-            "FuncDecl, Token name, List<String> parameters, Block body",
+            "VarDecl, Token name, Expr expr",
+            "FuncDecl, Token name, List<Token> parameters, Block body",
             "Block, List<Stmt> stmts",
             "IfStmt, Expr cond, Stmt thenBranch, Stmt elseBranch",
             "WhileStmt, Expr cond, Stmt body",

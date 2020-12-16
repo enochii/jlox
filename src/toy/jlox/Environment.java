@@ -44,4 +44,22 @@ public class Environment {
                     "No such variable "+name);
         }
     }
+
+    // todo : error handling? or no need?
+    public Object getAt(int dist, Token token) {
+        return ancestor(dist).bindings_.get(token.lexeme_);
+    }
+
+    public void assignAt(int dist, Token token, Object val) {
+        Environment env = ancestor(dist);
+        env.bindings_.put(token.lexeme_, val);
+    }
+
+    Environment ancestor(int dist) {
+        Environment environment = this;
+        for(int i=0; i<dist; i++) {
+            environment = environment.enclosing_;
+        }
+        return environment;
+    }
 }

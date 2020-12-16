@@ -44,7 +44,7 @@ public class Lox {
 
     public static void main(String[] args) {
 	// write your code here
-        String source = FileUtils.readFile("example/ch10_3.txt");
+        String source = FileUtils.readFile("example/scope.txt");
 
         run(source);
 //        runPrompt();
@@ -55,6 +55,8 @@ public class Lox {
         List<Token> tokens = new Scanner(source).scanTokens();
         // parse
         List<Stmt> stmts   = new Parser(tokens).program();
+        // resolve
+        new Resolver(interpreter).resolve(stmts);
         // execute
         if(hadError) return;
         interpreter.interpret(stmts);

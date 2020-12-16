@@ -36,7 +36,7 @@ abstract class Stmt {
     }
     
     static class VarDecl extends Stmt {
-        VarDecl(String name, Expr expr)        {
+        VarDecl(Token name, Expr expr)        {
             this.name = name;
             this.expr = expr;
         }
@@ -46,12 +46,12 @@ abstract class Stmt {
             return v.visitVarDecl(this);
         }
         
-        final String name;
+        final Token name;
         final Expr expr;
     }
     
     static class FuncDecl extends Stmt {
-        FuncDecl(Token name, List<String> parameters, Block body)        {
+        FuncDecl(Token name, List<Token> parameters, Block body)        {
             this.name = name;
             this.parameters = parameters;
             this.body = body;
@@ -63,7 +63,7 @@ abstract class Stmt {
         }
         
         final Token name;
-        final List<String> parameters;
+        final List<Token> parameters;
         final Block body;
     }
     
