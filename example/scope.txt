@@ -10,14 +10,9 @@ var a = "global a";
     f();        // global a
 
     var a = "local a";
-    f();
+    f();        // global a
     {
         var a = "local a-2";
         f();    // global a
     }
 }
-
-// output:
-//  global a
-//  local a
-//  global a
