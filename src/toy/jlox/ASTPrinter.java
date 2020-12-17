@@ -59,4 +59,14 @@ public class ASTPrinter implements Expr.Visitor<String> {
         ret.append(")");
         return ret.toString();
     }
+
+    @Override
+    public String visitGet(Expr.Get expr) {
+        return print(expr.object) + "." + expr.field.lexeme_;
+    }
+
+    @Override
+    public String visitSet(Expr.Set expr) {
+        return print(expr.object) + "." + expr.field.lexeme_ + "=" + print(expr.val);
+    }
 }

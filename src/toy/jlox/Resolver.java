@@ -100,16 +100,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitVariable(Expr.Variable expr) {
-        if(scopes_.empty()) return null;
 
-        Map<String, Boolean> cur = scopes_.peek();
-        Token name = expr.var;
-//        if(!cur.containsKey(name.lexeme_)) {
-//            Lox.error(name, "Undefined variable " + name.lexeme_);
-//        } else
-        if(scopes_.peek().containsKey(name.lexeme_) && !cur.get(name.lexeme_)) {
+        if(!scopes_.empty() && scopes_.peek().containsKey(expr.var.lexeme_)
+                && !scopes_.peek().get(expr.var.lexeme_)) {
             // incomplete definition
-            Lox.error(name, "Can not initialize " + name.lexeme_ +
+            Lox.error(expr.var, "Can not initialize " + expr.var.lexeme_ +
                     " by itself");
         }
         resolveLocal(expr, expr.var.lexeme_);
@@ -129,6 +124,19 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         for(Expr arg: stmt.args) {
             resolve(arg);
         }
+        return null;
+    }
+
+    @Override
+    public Void visitGet(Expr.Get expr) {
+        resolve(expr.object);
+        return null;
+    }
+
+    @Override
+    public Void visitSet(Expr.Set expr) {
+        resolve(expr.val);
+        resolve(expr.object);
         return null;
     }
 

@@ -127,6 +127,38 @@ abstract class Expr {
         final Token token;
     }
     
+    static class Get extends Expr {
+        Get(Expr object, Token field)        {
+            this.object = object;
+            this.field = field;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitGet(this);
+        }
+        
+        final Expr object;
+        final Token field;
+    }
+    
+    static class Set extends Expr {
+        Set(Expr object, Token field, Expr val)        {
+            this.object = object;
+            this.field = field;
+            this.val = val;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitSet(this);
+        }
+        
+        final Expr object;
+        final Token field;
+        final Expr val;
+    }
+    
     public interface Visitor<R> {
         R visitAssign(Assign expr);
         R visitBinary(Binary expr);
@@ -136,5 +168,7 @@ abstract class Expr {
         R visitVariable(Variable expr);
         R visitLogical(Logical expr);
         R visitCall(Call expr);
+        R visitGet(Get expr);
+        R visitSet(Set expr);
     }
 }

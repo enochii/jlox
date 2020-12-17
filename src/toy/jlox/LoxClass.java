@@ -7,20 +7,19 @@ import java.util.List;
  * @description :
  */
 public class LoxClass implements LoxCallable {
-    private final String name;
+    final String name;
     LoxClass(String name, List<Stmt> methods) {
         this.name = name;
     }
 
     @Override
     public String toString() {
-        return "<Class " + name + " >";
+        return "<Class " + name + ">";
     }
 
     @Override
     public Object call(Interpreter interpreter, List<Object> args) {
-        System.out.print("ctor!");
-        return null;
+        return new LoxInstance(this);
     }
 
     @Override

@@ -5,4 +5,15 @@ class A {
 
 }
 
-//println A;
+println A();
+
+fun f() {
+    return 1;
+}
+
+println(f());
+a = "ss";
+println (a + "aa");
+
+a.a.a().a().a;
+a.a.a.a = a.c.c = 1;

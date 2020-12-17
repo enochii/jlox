@@ -17,7 +17,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     // variables bindings
     final Environment globals_ = new Environment();
     Environment env_ = globals_;
-    private Object callRes_ = null;
+
+    // for debug
+    private final ASTPrinter astPrinter = new ASTPrinter();
 
     Interpreter() {
         // native function
@@ -140,12 +142,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitReturnStmt(Stmt.ReturnStmt stmt) {
+        Object callRes_ = null;
         if(stmt.expr != null) {
             callRes_ = evaluate(stmt.expr);
-        } else {
-            callRes_ = null;
         }
-        throw new ReturnException();
+        throw new ReturnException(callRes_);
     }
 
     @Override
@@ -356,12 +357,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         for(int i=0; i<call.args.size(); i++) {
             args.add(evaluate(call.args.get(i)));
         }
-        try {
-            func.call(this, args);
-        } catch (ReturnException e) {
-            // this value will be set by return statement
-            return callRes_;
-        }
+
+        return func.call(this, args);
+    }
+
+    @Override
+    public Object visitGet(Expr.Get expr) {
+        // todo
+        System.out.println(astPrinter.print(expr));
+        return null;
+    }
+
+    @Override
+    public Object visitSet(Expr.Set expr) {
+        // todo
+        System.out.println(astPrinter.print(expr));
         return null;
     }
 
@@ -369,6 +379,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     static class ReturnException extends RuntimeException {
+        final Object retVal;
+        ReturnException(Object retVal) {
+            this.retVal = retVal;
+        }
     }
 
     static class ContinueException extends RuntimeException {

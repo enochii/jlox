@@ -29,7 +29,11 @@ public class LoxFunction implements LoxCallable {
                     args.get(i)
             );
         }
-        interpreter.executeBlock(function.body, funcEnv);
+        try {
+            interpreter.executeBlock(function.body, funcEnv);
+        } catch (Interpreter.ReturnException e) {
+            return e.retVal;
+        }
         return null;
     }
 

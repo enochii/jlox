@@ -101,6 +101,8 @@ if __name__ == "__main__":
             "Variable, Token var",
             "Logical, Expr left, Token op, Expr right",
             "Call, Expr callee, List<Expr> args, Token token",
+            "Get, Expr object, Token field",
+            "Set, Expr object, Token field, Expr val",
         ])
     generate_ast().define_types("../jlox", "Stmt",
         [

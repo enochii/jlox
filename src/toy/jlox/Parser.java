@@ -304,11 +304,14 @@ public class Parser {
     private Expr assignment() {
         Expr expr = or();
         if(match(EQUAL)) {
-            if(!(expr instanceof Expr.Variable)) {
-                throw new ParseError();
+            if(expr instanceof Expr.Variable) {
+                Expr.Variable name = (Expr.Variable)expr;
+                return new Expr.Assign(name.var, assignment());
+            } else if(expr instanceof Expr.Get) {
+                Expr.Get get = (Expr.Get)expr;
+                return new Expr.Set(get.object, get.field, assignment());
             }
-            Expr.Variable name = (Expr.Variable)expr;
-            return new Expr.Assign(name.var, assignment());
+            error(previous(), "Expect lhs is a r-value");
         }
         return expr;
     }
@@ -399,27 +402,38 @@ public class Parser {
     }
 
     private Expr call() {
-        Expr callee = primary();
-        while(match(LEFT_PAREN)) {
-            List<Expr> args = null;
-            if(check(RIGHT_PAREN)) {
-                // empty argument list
-                args = new ArrayList<>();
+        Expr expr = primary();
+        while(true) {
+            if(match(LEFT_PAREN)) {
+                expr = finishCall(expr);
+            } else if(match(DOT)) {
+                Token field = consume(IDENTIFIER, "Expect a field token after '.'");
+                expr = new Expr.Get(expr, field);
             } else {
-                args = arguments();
+                break;
             }
-            Token paren = consume(RIGHT_PAREN, "Expect a ')' for a call");
-            // I think the parameter-limit check should have just handled in
-            // function definition??
-            if(args.size() > Const.MAX_ARGUMENT_SIZE) {
-                // not throw so no panic mode
-                // the parsing dont need sync!
-                error(paren, "number of argument should not be larger than "
-                        + Const.MAX_ARGUMENT_SIZE);
-            }
-            callee = new Expr.Call(callee, args, paren);
         }
-        return callee;
+        return expr;
+    }
+
+    private Expr finishCall(Expr callee) {
+        List<Expr> args = null;
+        if(check(RIGHT_PAREN)) {
+            // empty argument list
+            args = new ArrayList<>();
+        } else {
+            args = arguments();
+        }
+        Token paren = consume(RIGHT_PAREN, "Expect a ')' for a call");
+        // I think the parameter-limit check should have just handled in
+        // function definition??
+        if(args.size() > Const.MAX_ARGUMENT_SIZE) {
+            // not throw so no panic mode
+            // the parsing dont need sync!
+            error(paren, "number of argument should not be larger than "
+                    + Const.MAX_ARGUMENT_SIZE);
+        }
+        return new Expr.Call(callee, args, paren);
     }
 
     private List<Expr> arguments() {
