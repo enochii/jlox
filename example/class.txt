@@ -5,15 +5,12 @@ class A {
 
 }
 
-println A();
+a = A();
 
-fun f() {
-    return 1;
-}
+a.c = "a.c";
+println a.c;
 
-println(f());
-a = "ss";
-println (a + "aa");
-
-a.a.a().a().a;
-a.a.a.a = a.c.c = 1;
+a.a = A();
+a.a.c = "a.a.c";
+println a.a;
+println a.a.c;

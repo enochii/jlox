@@ -363,16 +363,26 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitGet(Expr.Get expr) {
-        // todo
-        System.out.println(astPrinter.print(expr));
-        return null;
+        Object object = evaluate(expr.object);
+        if(object instanceof LoxInstance) {
+            LoxInstance instance = (LoxInstance)object;
+            return instance.get(expr.field);
+        }
+        throw new RuntimeError(expr.field,
+                "object is not a Lox instance");
     }
 
     @Override
     public Object visitSet(Expr.Set expr) {
-        // todo
-        System.out.println(astPrinter.print(expr));
-        return null;
+        Object val = evaluate(expr.val);
+        Object object = evaluate(expr.object);
+        if(object instanceof LoxInstance) {
+            LoxInstance instance = (LoxInstance)object;
+            instance.set(expr.field, val);
+            return val;
+        }
+        throw new RuntimeError(expr.field,
+                "object is not a Lox instance");
     }
 
     static class BreakExceptoin extends RuntimeException {
