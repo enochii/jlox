@@ -29,6 +29,8 @@ public class Parser {
         program -> declaration* EOF
 
         declaration -> VarDecl
+                    -> funDecl
+                    -> clsDecl
                     |  statement
 
         // distinct the declaration and non-declaring statement
@@ -50,8 +52,9 @@ public class Parser {
 
 
     private Stmt declaration() {
+        if(match(CLASS)) return clsDecl();
         if(match(VAR)) return varDecl();
-        if(match(FUN)) return funcDecl();
+        if(match(FUN)) return funcDecl("function");
 
         return statement();
     }
@@ -76,12 +79,12 @@ public class Parser {
         return new Stmt.ExprStmt(expr);
     }
 
-    private Stmt funcDecl() {
+    private Stmt funcDecl(String kind) {
         // "fun" token has been eaten
         if(match(IDENTIFIER)) {
             Token name = previous();
             consume(LEFT_PAREN,
-                    "Expect a '(' for function definition");
+                    "Expect a '(' for " + kind + " definition");
             List<Token> parameters = null;
             if(!check(RIGHT_PAREN)) {
                 parameters = paras();
@@ -89,14 +92,14 @@ public class Parser {
                 parameters = new ArrayList<>();
             }
             consume(RIGHT_PAREN,
-                    "Expect a ')' for function definition");
+                    "Expect a ')' for " + kind + " definition");
             consume(LEFT_BRACE,
-                    "Expect a '{' for function definition");
+                    "Expect a '{' for " + kind + " definition");
             Stmt.Block body = new Stmt.Block(block());
 
             return new Stmt.FuncDecl(name, parameters, body);
         }
-        throw error(peek(), "Expect a ID for function name");
+        throw error(peek(), "Expect a ID for " + kind + " name");
     }
 
     // collect the parameters for function definition
@@ -126,6 +129,21 @@ public class Parser {
             return new Stmt.VarDecl(var, rvalue);
         }
         throw error(peek(), "Expect a ID for variable name");
+    }
+
+    // class CLASS_NAME { funcDecl* }
+    private Stmt clsDecl() {
+        Token clsName = consume(IDENTIFIER, "Expect a class name");
+        consume(LEFT_BRACE, "Expect a '{' after class name");
+
+        List<Stmt> methods = new ArrayList<>();
+
+        while (!check(RIGHT_BRACE)) {
+            methods.add(funcDecl("method"));
+        }
+
+        consume(RIGHT_BRACE, "Expect a '}");
+        return new Stmt.ClassStmt(clsName, methods);
     }
 
     // collect statements in the block

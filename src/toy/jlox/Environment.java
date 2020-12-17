@@ -45,7 +45,6 @@ public class Environment {
         }
     }
 
-    // todo : error handling? or no need?
     public Object getAt(int dist, Token token) {
         return ancestor(dist).bindings_.get(token.lexeme_);
     }

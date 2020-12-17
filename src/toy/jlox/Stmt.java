@@ -153,6 +153,21 @@ abstract class Stmt {
         final Token semicolon;
     }
     
+    static class ClassStmt extends Stmt {
+        ClassStmt(Token name, List<Stmt> methods)        {
+            this.name = name;
+            this.methods = methods;
+        }
+        
+        @Override
+        <R> R accept(Visitor<R> v) {
+            return v.visitClassStmt(this);
+        }
+        
+        final Token name;
+        final List<Stmt> methods;
+    }
+    
     public interface Visitor<R> {
         R visitExprStmt(ExprStmt expr);
         R visitPrintStmt(PrintStmt expr);
@@ -164,5 +179,6 @@ abstract class Stmt {
         R visitBreakStmt(BreakStmt expr);
         R visitContinueStmt(ContinueStmt expr);
         R visitReturnStmt(ReturnStmt expr);
+        R visitClassStmt(ClassStmt expr);
     }
 }

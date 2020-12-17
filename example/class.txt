@@ -1,0 +1,8 @@
+var a = 0;
+println a;
+
+class A {
+
+}
+
+//println A;

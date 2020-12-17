@@ -17,7 +17,7 @@ public class LoxFunction implements LoxCallable {
 
     @Override
     public Object call(Interpreter interpreter, List<Object> args) {
-        // todo: change .globals_ -> env_! we get a closure!? [X] No
+        // change .globals_ -> env_! we get a closure!? [X] No
         // instead we get a dynamic scope...
         // if we want a static scope with closure, we need to bind the env
         // at the function-declaration point as the enclosing env here!

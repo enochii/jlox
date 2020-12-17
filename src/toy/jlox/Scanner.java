@@ -115,8 +115,6 @@ public class Scanner {
             case '.':
                 addToken(DOT); break;
             case '-':
-                // todo: handle negative number
-                // seems like its more elegant to do it in parser...
                 addToken(MINUS); break;
             case '+':
                 addToken(

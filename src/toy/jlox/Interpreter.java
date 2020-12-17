@@ -148,6 +148,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         throw new ReturnException();
     }
 
+    @Override
+    public Void visitClassStmt(Stmt.ClassStmt stmt) {
+        // todo
+        String clsName = stmt.name.lexeme_;
+        LoxClass loxClass = new LoxClass(clsName, stmt.methods);
+        env_.define(clsName, loxClass);
+        return null;
+    }
+
     static class RuntimeError extends RuntimeException {
         Token token;
         RuntimeError(Token token, String msg) {
