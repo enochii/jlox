@@ -1,0 +1,15 @@
+fun fib(x) {
+    if(x == 1 or x == 0) return 1;
+    return fib(x-1) + fib(x-2);
+}
+
+var start = clock();
+println fib(30);
+println clock() - start;
+
+// 1346269
+// 40.76300001144409 seconds
+
+// python py_fib.py
+// 1346269
+// 0.41289377212524414 seconds

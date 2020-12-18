@@ -26,7 +26,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         globals_.define("clock", new LoxCallable() {
             @Override
             public Object call(Interpreter interpreter, List<Object> args) {
-                return System.currentTimeMillis() / 1000;
+                return (double)System.currentTimeMillis() / 1000;
             }
 
             @Override

@@ -8,8 +8,11 @@ import java.util.List;
  */
 public class LoxClass implements LoxCallable {
     final String name;
-    LoxClass(String name, List<Stmt> methods) {
+    final List<Stmt.FuncDecl> methods;
+
+    LoxClass(String name, List<Stmt.FuncDecl> methods) {
         this.name = name;
+        this.methods = methods;
     }
 
     @Override
@@ -19,7 +22,20 @@ public class LoxClass implements LoxCallable {
 
     @Override
     public Object call(Interpreter interpreter, List<Object> args) {
-        return new LoxInstance(this);
+        LoxInstance instance = new LoxInstance(this);
+        initInstanceEnv(interpreter, instance);
+        return instance;
+    }
+
+    private void initInstanceEnv(Interpreter interpreter, LoxInstance instance) {
+        Environment instEnv = new Environment(interpreter.env_);
+        instEnv.define("this", instance);
+
+        for(Stmt.FuncDecl funcDecl: methods) {
+            LoxFunction loxFunction = new LoxFunction(funcDecl, instEnv);
+            instEnv.define(funcDecl.name.lexeme_, loxFunction);
+        }
+        instance.setInstEnv(instEnv);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class Parser {
         return new Stmt.ExprStmt(expr);
     }
 
-    private Stmt funcDecl(String kind) {
+    private Stmt.FuncDecl funcDecl(String kind) {
         // "fun" token has been eaten
         if(match(IDENTIFIER)) {
             Token name = previous();
@@ -136,7 +136,7 @@ public class Parser {
         Token clsName = consume(IDENTIFIER, "Expect a class name");
         consume(LEFT_BRACE, "Expect a '{' after class name");
 
-        List<Stmt> methods = new ArrayList<>();
+        List<Stmt.FuncDecl> methods = new ArrayList<>();
 
         while (!check(RIGHT_BRACE)) {
             methods.add(funcDecl("method"));
@@ -454,7 +454,7 @@ public class Parser {
 
         if(match(STRING, NUM))
             return new Expr.Literal(previous().literal_);
-        if (match(IDENTIFIER))
+        if (match(IDENTIFIER) || match(THIS)) // this should be handled
             return new Expr.Variable(previous());
         // parentheses
         if(match(LEFT_PAREN)) {

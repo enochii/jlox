@@ -8,7 +8,7 @@ import java.util.Map;
  * @description :
  */
 public class Environment {
-    private Map<String, Object> bindings_ = new HashMap<>();
+    final Map<String, Object> bindings_ = new HashMap<>();
     final Environment enclosing_;
 
     Environment() {

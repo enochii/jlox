@@ -45,7 +45,10 @@ public class Scanner {
         keywords_.put("println", PRINTLN);
         keywords_.put("return", RETURN);
         keywords_.put("super", SUPER);
-        keywords_.put("this", THIS);
+        // treat this as a IDENTIFIER
+        // then we can do some interesting things like
+        // instance.this.this.this.this
+//        keywords_.put("this", THIS);
         keywords_.put("true", TRUE);
         keywords_.put("var", VAR);
         keywords_.put("while", WHILE);

@@ -2,11 +2,27 @@ var a = 0;
 println a;
 
 class A {
+    f() {
+        println "f() of A";
+        // println this;
+        print "call "; g(); println " by f()";
+        println h();
+        // print fls_h; // this will print a nil
+    }
 
+    g() {
+        print "g() of A";
+    }
+
+    h() {
+        this.fld_h = "a field by h()";
+        return this.fld_h;
+    }
 }
 
 a = A();
 
+// field
 a.c = "a.c";
 println a.c;
 
@@ -14,3 +30,13 @@ a.a = A();
 a.a.c = "a.a.c";
 println a.a;
 println a.a.c;
+
+// method
+a.f();
+a.this.this.this.this.this.this.f() ; //interesting ah?
+
+// bound method
+// which means it can touch "this"
+var a_g = a.g;
+// call it later
+a_g();

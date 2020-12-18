@@ -166,6 +166,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declare(stmt.name);
         define(stmt.name); // eagerly define
 
+        resolveFuncBody(stmt);
+
+        return null;
+    }
+
+    private void resolveFuncBody(Stmt.FuncDecl stmt) {
         enterScope();
         for(Token pa:stmt.parameters) {
             declare(pa);
@@ -174,8 +180,6 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         // body and the argument list are in the same scope!
         resolve(stmt.body.stmts);
         exitScope();
-
-        return null;
     }
 
     @Override
@@ -189,8 +193,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     @Override
     public Void visitIfStmt(Stmt.IfStmt expr) {
         resolve(expr.cond);
-        resolve(expr.elseBranch);
-        if(expr.thenBranch != null) resolve(expr.thenBranch);
+        resolve(expr.thenBranch);
+        if(expr.elseBranch != null) resolve(expr.elseBranch);
         return null;
     }
 
@@ -224,6 +228,17 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         // todo
         declare(expr.name);
         define(expr.name);
+
+        enterScope();
+        scopes_.peek().put("this", true);
+        for(Stmt.FuncDecl funcDecl: expr.methods) {
+            declare(funcDecl.name);
+            define(funcDecl.name);
+        }
+        for(Stmt.FuncDecl funcDecl: expr.methods) {
+            resolveFuncBody(funcDecl);
+        }
+        exitScope();
         return null;
     }
 }

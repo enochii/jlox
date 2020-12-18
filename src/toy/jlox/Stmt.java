@@ -154,7 +154,7 @@ abstract class Stmt {
     }
     
     static class ClassStmt extends Stmt {
-        ClassStmt(Token name, List<Stmt> methods)        {
+        ClassStmt(Token name, List<Stmt.FuncDecl> methods)        {
             this.name = name;
             this.methods = methods;
         }
@@ -165,7 +165,7 @@ abstract class Stmt {
         }
         
         final Token name;
-        final List<Stmt> methods;
+        final List<Stmt.FuncDecl> methods;
     }
     
     public interface Visitor<R> {
