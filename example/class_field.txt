@@ -1,7 +1,12 @@
 class A {
     f() {
         this.fld = 1;
-        println fld;
+        println this.fld;
+        println this;
+        this.g();
+    }
+    g() {
+
     }
 }
 

@@ -8,11 +8,11 @@ import java.util.List;
  */
 // user defined function wrapper
 public class LoxFunction implements LoxCallable {
-    final Stmt.FuncDecl function;
-    final Environment enclosing;
-    LoxFunction(Stmt.FuncDecl FuncDecl, Environment enclosing) {
-        this.function = FuncDecl;
-        this.enclosing = enclosing;
+    final Stmt.FuncDecl funcDecl;
+    final Environment closure;
+    LoxFunction(Stmt.FuncDecl funcDecl, Environment closure) {
+        this.funcDecl = funcDecl;
+        this.closure = closure;
     }
 
     @Override
@@ -21,29 +21,40 @@ public class LoxFunction implements LoxCallable {
         // instead we get a dynamic scope...
         // if we want a static scope with closure, we need to bind the env
         // at the function-declaration point as the enclosing env here!
-        Environment funcEnv = new Environment(enclosing);
+        Environment funcEnv = new Environment(closure);
 
         for(int i=0; i<args.size(); i++) {
             funcEnv.define(
-                    function.parameters.get(i).lexeme_,
+                    funcDecl.parameters.get(i).lexeme_,
                     args.get(i)
             );
         }
         try {
-            interpreter.executeBlock(function.body, funcEnv);
+            interpreter.executeBlock(funcDecl.body, funcEnv);
         } catch (Interpreter.ReturnException e) {
             return e.retVal;
         }
         return null;
     }
 
+//     bind "this" with an instance to the function
+    public LoxFunction bind(LoxInstance instance) {
+        Environment bindEnv = new Environment(closure);
+        bindEnv.define("this", instance);
+        return new LoxFunction(funcDecl, bindEnv);
+    }
+
+    public LoxFunction bindEnv(Environment environment) {
+        return new LoxFunction(funcDecl, environment);
+    }
+
     @Override
     public int arity() {
-        return function.parameters.size();
+        return funcDecl.parameters.size();
     }
 
     @Override
     public String toString() {
-        return "<fn " + function.name.lexeme_ + ">";
+        return "<fn " + funcDecl.name.lexeme_ + ">";
     }
 }

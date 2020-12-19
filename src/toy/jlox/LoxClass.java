@@ -1,6 +1,7 @@
 package toy.jlox;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : SCH001
@@ -8,9 +9,9 @@ import java.util.List;
  */
 public class LoxClass implements LoxCallable {
     final String name;
-    final List<Stmt.FuncDecl> methods;
+    final Map<String, LoxFunction> methods;
 
-    LoxClass(String name, List<Stmt.FuncDecl> methods) {
+    LoxClass(String name, Map<String, LoxFunction> methods) {
         this.name = name;
         this.methods = methods;
     }
@@ -20,23 +21,16 @@ public class LoxClass implements LoxCallable {
         return "<Class " + name + ">";
     }
 
+    LoxFunction lookupMethod(Token name) {
+        // maybe you can through this method to find THIS !
+        return methods.get(name.lexeme_);
+    }
+
     @Override
     public Object call(Interpreter interpreter, List<Object> args) {
-        LoxInstance instance = new LoxInstance(this);
-        initInstanceEnv(interpreter, instance);
-        return instance;
+        return new LoxInstance(this);
     }
 
-    private void initInstanceEnv(Interpreter interpreter, LoxInstance instance) {
-        Environment instEnv = new Environment(interpreter.env_);
-        instEnv.define("this", instance);
-
-        for(Stmt.FuncDecl funcDecl: methods) {
-            LoxFunction loxFunction = new LoxFunction(funcDecl, instEnv);
-            instEnv.define(funcDecl.name.lexeme_, loxFunction);
-        }
-        instance.setInstEnv(instEnv);
-    }
 
     @Override
     public int arity() {

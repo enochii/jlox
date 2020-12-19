@@ -5,8 +5,8 @@ class A {
     f() {
         println "f() of A";
         // println this;
-        print "call "; g(); println " by f()";
-        println h();
+        print "call "; this.g(); println " by f()";
+        println this.h();
         // print fls_h; // this will print a nil
     }
 

@@ -18,27 +18,31 @@ public class LoxInstance {
     LoxInstance(LoxClass loxClass) {
         this.klass = loxClass;
         this.fields = new HashMap<>();
-    }
-
-    void setInstEnv(Environment env) {
-        this.instEnv = env;
-    }
-
-    Object lookupMethod(Token name) {
-        // maybe you can through this method to find THIS !
-        return instEnv.getAt(0, name);
+        this.fields.put("this", this); // patch
     }
 
     Object get(Token field) {
-        if(fields.containsKey(field.lexeme_)) {
-            return fields.get(field.lexeme_);
+        String name = field.lexeme_;
+        if(fields.containsKey(name)) {
+            return fields.get(name);
         } else {
-            Object method = lookupMethod(field);
-            if(method != null) return method;
+            LoxFunction method = klass.lookupMethod(field);
+            if(method != null) {
+                LoxFunction boundMethod = null;
+                if(instEnv == null) {
+                    boundMethod = method.bind(this);
+                    instEnv = boundMethod.closure;
+                } else {
+                    // make instEnv persistent, so that every method
+                    // can share an environment
+                    boundMethod = method.bindEnv(instEnv);
+                }
+                return boundMethod;
+            }
         }
 
         throw new Interpreter.RuntimeError(field,
-                "No such field or method" + field.lexeme_);
+                "No such field or method " + field.lexeme_);
     }
 
     void set(Token field, Object val) {

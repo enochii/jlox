@@ -153,7 +153,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public Void visitClassStmt(Stmt.ClassStmt stmt) {
         // todo
         String clsName = stmt.name.lexeme_;
-        LoxClass loxClass = new LoxClass(clsName, stmt.methods);
+        Map<String, LoxFunction> methods = new HashMap<>();
+        for(Stmt.FuncDecl funcDecl: stmt.methods) {
+            LoxFunction loxFunction = new LoxFunction(funcDecl, env_);
+            methods.put(funcDecl.name.lexeme_, loxFunction);
+        }
+
+        LoxClass loxClass = new LoxClass(clsName, methods);
         env_.define(clsName, loxClass);
         return null;
     }
