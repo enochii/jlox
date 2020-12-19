@@ -350,7 +350,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
         if(func.arity() != call.args.size()) {
             throw new RuntimeError(call.token,
-                    "the number of parameter and arguments not matched");
+                    "[" + func.toString() + "]: the number of parameter and arguments not matched");
         }
 
         List<Object> args = new ArrayList<>();

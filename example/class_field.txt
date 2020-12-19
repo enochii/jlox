@@ -1,0 +1,9 @@
+class A {
+    f() {
+        this.fld = 1;
+        println fld;
+    }
+}
+
+a = A();
+a.f();
