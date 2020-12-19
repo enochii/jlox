@@ -156,7 +156,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Map<String, LoxFunction> methods = new HashMap<>();
         for(Stmt.FuncDecl funcDecl: stmt.methods) {
             LoxFunction loxFunction = new LoxFunction(funcDecl, env_);
-            methods.put(funcDecl.name.lexeme_, loxFunction);
+            methods.put(Util.mangle(funcDecl.name.lexeme_, + funcDecl.parameters.size()),
+                    loxFunction);
         }
 
         LoxClass loxClass = new LoxClass(clsName, methods);
@@ -346,6 +347,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitCall(Expr.Call call) {
+        LoxClass.argNum = call.args.size();
         Object callee = evaluate(call.callee);
         if(!(callee instanceof LoxCallable)) {
             throw new RuntimeError(call.token, call.callee

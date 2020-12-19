@@ -8,6 +8,7 @@ import java.util.Map;
  * @description :
  */
 public class LoxClass implements LoxCallable {
+    static int argNum = -1;
     final String name;
     final Map<String, LoxFunction> methods;
 
@@ -21,14 +22,27 @@ public class LoxClass implements LoxCallable {
         return "<Class " + name + ">";
     }
 
-    LoxFunction lookupMethod(Token name) {
+    LoxFunction lookupMethod(String name) {
         // maybe you can through this method to find THIS !
-        return methods.get(name.lexeme_);
+        if(argNum < 0) {
+            throw new RuntimeException("invalid mangling");
+        }
+        name = Util.mangle(name, argNum);
+        argNum = -1;
+        return methods.get(name);
     }
 
     @Override
     public Object call(Interpreter interpreter, List<Object> args) {
-        return new LoxInstance(this);
+        // allocate object
+        LoxInstance instance = new LoxInstance(this);
+
+//        LoxFunction ctor = lookupMethod("init");
+//        if(ctor != null) {
+//            // initialize
+//            ctor.bind(instance).call(interpreter, args);
+//        }
+        return instance;
     }
 
 

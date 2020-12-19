@@ -51,6 +51,11 @@ public class Environment {
 
     public void assignAt(int dist, Token token, Object val) {
         Environment env = ancestor(dist);
+        String name = token.lexeme_;
+        if(!env.bindings_.containsKey(name)) {
+            throw new Interpreter.RuntimeError(token,
+                    "No such variable "+name);
+        }
         env.bindings_.put(token.lexeme_, val);
     }
 

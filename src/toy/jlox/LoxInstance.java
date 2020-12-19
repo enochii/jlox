@@ -26,7 +26,7 @@ public class LoxInstance {
         if(fields.containsKey(name)) {
             return fields.get(name);
         } else {
-            LoxFunction method = klass.lookupMethod(field);
+            LoxFunction method = klass.lookupMethod(field.lexeme_);
             if(method != null) {
                 LoxFunction boundMethod = null;
                 if(instEnv == null) {

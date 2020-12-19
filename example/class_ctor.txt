@@ -1,0 +1,27 @@
+class A{
+    init(a) {
+        this.a = a;
+    }
+    f(a) {
+        println "f1";
+    }
+
+    f(a, b) {
+        println "f2";
+    }
+}
+
+{
+    var a = A();
+    a.init("sch001");
+    println a.a;
+
+    // naive method overloading!
+    a.f(1);
+    a.f(2, 3);
+}
+
+fun f(a) {
+    println "global f";
+}
+f(1);
