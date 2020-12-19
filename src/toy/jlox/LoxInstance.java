@@ -18,6 +18,9 @@ public class LoxInstance {
     LoxInstance(LoxClass loxClass) {
         this.klass = loxClass;
         this.fields = new HashMap<>();
+        this.instEnv = new Environment(klass.clsEnv);
+        this.instEnv.define("this", this);
+        // this.this.this
         this.fields.put("this", this); // patch
     }
 

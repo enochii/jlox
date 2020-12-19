@@ -1,5 +1,7 @@
 package toy.jlox;
 
+import javafx.util.Pair;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,10 +12,15 @@ import java.util.Map;
 public class LoxClass implements LoxCallable {
     final String name;
     final Map<String, LoxFunction> methods;
+    final Environment clsEnv;
 
-    LoxClass(String name, Map<String, LoxFunction> methods) {
+    LoxClass(String name, Map<String, LoxFunction> methods, Environment outside) {
         this.name = name;
         this.methods = methods;
+        clsEnv = new Environment(outside);
+        for(Map.Entry<String, LoxFunction> entry: methods.entrySet()) {
+            clsEnv.define(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override

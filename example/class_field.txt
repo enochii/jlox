@@ -1,14 +1,16 @@
-class A {
-    f() {
-        this.fld = 1;
-        println this.fld;
-        println this;
-        this.g();
-    }
-    g() {
+{
+    class A {
+        f() {
+            this.fld = 1;
+            println this.fld;
+            println this;
+            g();
+        }
+        g() {
 
+        }
     }
+
+    a = A();
+    a.f();
 }
-
-a = A();
-a.f();

@@ -229,16 +229,20 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declare(expr.name);
         define(expr.name);
 
+        // class env
+        enterScope();
+        for(Stmt.FuncDecl funcDecl: expr.methods) {
+            declare(funcDecl.name);
+            define(funcDecl.name);
+        }
+        // instance env
         enterScope();
         scopes_.peek().put("this", true);
-//        for(Stmt.FuncDecl funcDecl: expr.methods) {
-//            declare(funcDecl.name);
-//            define(funcDecl.name);
-//        }
         for(Stmt.FuncDecl funcDecl: expr.methods) {
             resolveFuncBody(funcDecl);
         }
-        exitScope();
+        exitScope(); // instance env exit
+        exitScope(); // class env exit
         return null;
     }
 }

@@ -159,7 +159,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             methods.put(funcDecl.name.lexeme_, loxFunction);
         }
 
-        LoxClass loxClass = new LoxClass(clsName, methods);
+        LoxClass loxClass = new LoxClass(clsName, methods, env_);
         env_.define(clsName, loxClass);
         return null;
     }
@@ -349,6 +349,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Object callee = evaluate(call.callee);
         if(!(callee instanceof LoxCallable)) {
             throw new RuntimeError(call.token, call.callee
+                    + " [" + callee + "]"
                     + " is not a callable object!");
         }
 
