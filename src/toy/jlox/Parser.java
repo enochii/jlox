@@ -134,6 +134,12 @@ public class Parser {
     // class CLASS_NAME { funcDecl* }
     private Stmt clsDecl() {
         Token clsName = consume(IDENTIFIER, "Expect a class name");
+
+        Expr.Variable superClass = null;
+        if(match(LESS)) {
+            consume(IDENTIFIER, "Expect a super class");
+            superClass = new Expr.Variable(previous());
+        }
         consume(LEFT_BRACE, "Expect a '{' after class name");
 
         List<Stmt.FuncDecl> methods = new ArrayList<>();
@@ -143,7 +149,7 @@ public class Parser {
         }
 
         consume(RIGHT_BRACE, "Expect a '}");
-        return new Stmt.ClassStmt(clsName, methods);
+        return new Stmt.ClassStmt(clsName, methods, superClass);
     }
 
     // collect statements in the block

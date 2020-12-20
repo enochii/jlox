@@ -1,0 +1,34 @@
+
+class A {
+    init(){
+        println "A.init()";
+        this.a = "A.a";
+    }
+    f() {
+        this.fld = 1;
+        println this.fld;
+    }
+    g() {
+        println "class A.g()";
+    }
+}
+
+{
+    class B < A {
+        init() {
+            super.init();
+            println "B.init()";
+            this.b = "B.b";
+        }
+    }
+
+    var b = B();
+    b.g();
+    b.init();
+    println b.a;
+    println b.b;
+}
+
+var a = A();
+a.f();
+

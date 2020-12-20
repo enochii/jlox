@@ -39,12 +39,13 @@ public class Scanner {
         keywords_.put("fun", FUN);
         keywords_.put("for", FOR);
         keywords_.put("if", IF);
+//        keywords_.put("inherits", INHERITS);
         keywords_.put("nil", NIL);
         keywords_.put("or", OR);
         keywords_.put("print", PRINT);
         keywords_.put("println", PRINTLN);
         keywords_.put("return", RETURN);
-        keywords_.put("super", SUPER);
+//        keywords_.put("super", SUPER);
         // treat this as a IDENTIFIER
         // then we can do some interesting things like
         // instance.this.this.this.this

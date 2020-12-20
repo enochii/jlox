@@ -10,10 +10,12 @@ import java.util.Map;
 public class LoxClass implements LoxCallable {
     final String name;
     final Map<String, LoxFunction> methods;
+    final LoxClass superCls;
 
-    LoxClass(String name, Map<String, LoxFunction> methods) {
+    LoxClass(String name, Map<String, LoxFunction> methods, LoxClass superCls) {
         this.name = name;
         this.methods = methods;
+        this.superCls = superCls;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class LoxClass implements LoxCallable {
 
     @Override
     public Object call(Interpreter interpreter, List<Object> args) {
-        return new LoxInstance(this);
+        return new LoxInstance(interpreter, this);
     }
 
 

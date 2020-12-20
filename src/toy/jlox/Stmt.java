@@ -154,9 +154,10 @@ abstract class Stmt {
     }
     
     static class ClassStmt extends Stmt {
-        ClassStmt(Token name, List<Stmt.FuncDecl> methods)        {
+        ClassStmt(Token name, List<Stmt.FuncDecl> methods, Expr.Variable superCls)        {
             this.name = name;
             this.methods = methods;
+            this.superCls = superCls;
         }
         
         @Override
@@ -166,6 +167,7 @@ abstract class Stmt {
         
         final Token name;
         final List<Stmt.FuncDecl> methods;
+        final Expr.Variable superCls;
     }
     
     public interface Visitor<R> {

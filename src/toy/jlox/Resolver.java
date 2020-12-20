@@ -229,8 +229,16 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declare(expr.name);
         define(expr.name);
 
+        if(expr.superCls != null) {
+            if(expr.name.lexeme_.equals(expr.superCls.var.lexeme_)) {
+                Lox.error(expr.superCls.var, " Can not inherit itself");
+            }
+            resolve(expr.superCls);
+        }
+
         enterScope();
         scopes_.peek().put("this", true);
+        scopes_.peek().put("super", true);
 //        for(Stmt.FuncDecl funcDecl: expr.methods) {
 //            declare(funcDecl.name);
 //            define(funcDecl.name);

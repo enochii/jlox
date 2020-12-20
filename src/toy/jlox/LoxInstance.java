@@ -2,6 +2,7 @@ package toy.jlox;
 
 import com.sun.corba.se.impl.oa.toa.TOA;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,8 +15,13 @@ public class LoxInstance {
     private final LoxClass klass;
     final Map<String, Object> fields;
     private Environment instEnv = null;
+    LoxInstance parent = null;
 
-    LoxInstance(LoxClass loxClass) {
+    LoxInstance(Interpreter interpreter, LoxClass loxClass) {
+        if(loxClass.superCls != null) {
+            this.parent = (LoxInstance)
+                    loxClass.superCls.call(interpreter, new ArrayList<>());
+        }
         this.klass = loxClass;
         this.fields = new HashMap<>();
         this.fields.put("this", this); // patch
@@ -32,6 +38,7 @@ public class LoxInstance {
                 if(instEnv == null) {
                     boundMethod = method.bind(this);
                     instEnv = boundMethod.closure;
+                    instEnv.define("super", this.parent);
                 } else {
                     // make instEnv persistent, so that every method
                     // can share an environment
@@ -41,6 +48,7 @@ public class LoxInstance {
             }
         }
 
+        if(parent != null) return parent.get(field);
         throw new Interpreter.RuntimeError(field,
                 "No such field or method " + field.lexeme_);
     }
