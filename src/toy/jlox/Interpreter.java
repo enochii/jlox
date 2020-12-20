@@ -34,6 +34,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 return 0;
             }
         });
+        globals_.define("dump", new LoxCallable() {
+            @Override
+            public Object call(Interpreter interpreter, List<Object> args) {
+                Object o = args.get(0);
+                if(o instanceof LoxInstance) {
+                    LoxInstance inst = (LoxInstance)o;
+                    inst.dumpMe();
+                } else {
+                    System.out.println(o);
+                }
+                return null;
+            }
+
+            @Override
+            public int arity() {
+                return 1;
+            }
+        });
     }
 
     // lexical address related methods

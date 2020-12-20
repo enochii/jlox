@@ -1,0 +1,15 @@
+class A {
+    init(a) {
+        this.a = a;
+    }
+}
+
+class B < A {
+
+}
+
+var b = B();
+b.init("a");
+dump(b);
+b.a = "b";
+dump(b);

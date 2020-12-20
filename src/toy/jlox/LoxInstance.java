@@ -54,11 +54,43 @@ public class LoxInstance {
     }
 
     void set(Token field, Object val) {
+        String fieldName = field.lexeme_;
+        LoxInstance curIns = this;
+        do {
+            if(curIns.fields.containsKey(fieldName)) {
+                curIns.fields.put(fieldName, val);
+                return;
+            }
+            curIns = this.parent;
+        } while (curIns != null);
         fields.put(field.lexeme_, val);
     }
 
     @Override
     public String toString() {
         return "<Instance of Class"  + klass.name + ">";
+    }
+
+    static String prefix = "";
+    static private void addTab() {
+        prefix += "  ";
+    }
+    static private void rmTab() {
+        prefix = prefix.substring(0, prefix.length()-2);
+    }
+
+    public void dumpMe() {
+        System.out.println(prefix+"{");
+        addTab();
+        for (Map.Entry<String, Object> entry:fields.entrySet()) {
+            System.out.println(prefix + entry.getKey() +
+                    ": " + entry.getValue()
+                    );
+        }
+        if(parent != null) {
+            parent.dumpMe();
+        }
+        rmTab();
+        System.out.println(prefix+"}");
     }
 }
