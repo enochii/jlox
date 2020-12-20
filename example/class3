@@ -1,7 +1,0 @@
-class A {
-    init(a) {
-        this.a = a;
-    }
-}
-
-dump(A());

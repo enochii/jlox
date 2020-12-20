@@ -143,13 +143,18 @@ public class Parser {
         consume(LEFT_BRACE, "Expect a '{' after class name");
 
         List<Stmt.FuncDecl> methods = new ArrayList<>();
+        List<Stmt.FuncDecl> clsMethods = new ArrayList<>();
 
         while (!check(RIGHT_BRACE)) {
-            methods.add(funcDecl("method"));
+            if(match(CLASS)) {
+                clsMethods.add(funcDecl("class method"));
+            } else {
+                methods.add(funcDecl("method"));
+            }
         }
 
         consume(RIGHT_BRACE, "Expect a '}");
-        return new Stmt.ClassStmt(clsName, methods, superClass);
+        return new Stmt.ClassStmt(clsName, methods, clsMethods, superClass);
     }
 
     // collect statements in the block

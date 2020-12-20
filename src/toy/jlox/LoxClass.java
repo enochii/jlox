@@ -7,12 +7,22 @@ import java.util.Map;
  * @author : SCH001
  * @description :
  */
-public class LoxClass implements LoxCallable {
+
+/**
+ * every class is an instance.
+ * 1) an instance of a class can access the class methods
+ * 2) so, we put class C 's static methods into a meta class,
+ *    and then, make class C as the instance of the meta class's instance.
+ *    in this way, the class C can access the static methods.
+ */
+public class LoxClass extends LoxInstance implements LoxCallable {
     final String name;
     final Map<String, LoxFunction> methods;
+//    final Map<String, LoxFunction> clsMethods;
     final LoxClass superCls;
 
-    LoxClass(String name, Map<String, LoxFunction> methods, LoxClass superCls) {
+    LoxClass(LoxClass metaClass, String name, Map<String, LoxFunction> methods, LoxClass superCls) {
+        super(null, metaClass);
         this.name = name;
         this.methods = methods;
         this.superCls = superCls;
@@ -24,7 +34,6 @@ public class LoxClass implements LoxCallable {
     }
 
     LoxFunction lookupMethod(Token name) {
-        // maybe you can through this method to find THIS !
         return methods.get(name.lexeme_);
     }
 

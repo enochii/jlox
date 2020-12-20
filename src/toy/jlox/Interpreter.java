@@ -177,6 +177,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             methods.put(funcDecl.name.lexeme_, loxFunction);
         }
 
+        Map<String, LoxFunction> clsMethods = new HashMap<>();
+        for(Stmt.FuncDecl funcDecl: stmt.clsMethods) {
+            LoxFunction loxFunction = new LoxFunction(funcDecl, env_);
+            clsMethods.put(funcDecl.name.lexeme_, loxFunction);
+        }
+
         LoxClass superCls = null;
         if(stmt.superCls != null) {
             Object o = lookupVariable(stmt.superCls);
@@ -185,7 +191,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
             superCls = (LoxClass)o;
         }
-        LoxClass loxClass = new LoxClass(clsName, methods, superCls);
+        LoxClass metaClass = new LoxClass(null,clsName + " metaClass",
+                    clsMethods, null);
+
+        LoxClass loxClass = new LoxClass(metaClass, clsName, methods, superCls);
         env_.define(clsName, loxClass);
         return null;
     }

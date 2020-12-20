@@ -5,7 +5,12 @@ class A {
 }
 
 class B < A {
+    class cf() {
+        println "static method B.cf()";
+    }
+    f() {
 
+    }
 }
 
 var b = B();
@@ -13,3 +18,6 @@ b.init("a");
 dump(b);
 b.a = "b";
 dump(b);
+
+dump(B);
+B.cf();

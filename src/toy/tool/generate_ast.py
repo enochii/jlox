@@ -116,6 +116,6 @@ if __name__ == "__main__":
             "BreakStmt, Token semicolon",
             "ContinueStmt, Token semicolon",
             "ReturnStmt, Expr expr, Token semicolon",
-            "ClassStmt, Token name, List<Stmt.FuncDecl> methods, Expr.Variable superCls",
+            "ClassStmt, Token name, List<Stmt.FuncDecl> methods, List<Stmt.FuncDecl> clsMethods, Expr.Variable superCls",
             # "ForStmt, Stmt init, Expr cond, Expr incr, Stmt body"
         ])

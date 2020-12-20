@@ -13,7 +13,7 @@ class A {
     }
 }
 
-{
+//{
     class B < A {
         init() {
             super.init();
@@ -27,8 +27,6 @@ class A {
     b.init();
     println b.a;
     println b.b;
-}
+//}
 
-var a = A();
-a.f();
 

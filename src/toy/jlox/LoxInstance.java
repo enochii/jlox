@@ -13,12 +13,12 @@ import java.util.Map;
 public class LoxInstance {
     // pointer to class
     private final LoxClass klass;
-    final Map<String, Object> fields;
+    Map<String, Object> fields;
     private Environment instEnv = null;
     LoxInstance parent = null;
 
     LoxInstance(Interpreter interpreter, LoxClass loxClass) {
-        if(loxClass.superCls != null) {
+        if(loxClass != null && loxClass.superCls != null) {
             this.parent = (LoxInstance)
                     loxClass.superCls.call(interpreter, new ArrayList<>());
         }
@@ -61,7 +61,7 @@ public class LoxInstance {
                 curIns.fields.put(fieldName, val);
                 return;
             }
-            curIns = this.parent;
+            curIns = curIns.parent;
         } while (curIns != null);
         fields.put(field.lexeme_, val);
     }
