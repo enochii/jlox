@@ -1,0 +1,15 @@
+var a = 1; //global is not checked...
+
+{
+    var b = "b";
+    {
+        // print a;
+        var c="c";
+        {
+            println c;
+            var d = "d";
+        }
+        println b;
+        var e = "e";
+    }
+}

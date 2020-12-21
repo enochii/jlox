@@ -5,13 +5,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import static toy.jlox.Resolver.VARIABLE_STATE.*;
+
 /**
  * @author : SCH001
  * @description :
  */
 public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
-    final Stack<Map<String, Boolean>> scopes_ = new Stack<>();
+    final Stack<Map<String, VARIABLE_STATE>> scopes_ = new Stack<>();
     final Interpreter interpreter_;
+
+    enum VARIABLE_STATE {
+        DECLARED,
+        INITIALIZED,
+        READ
+    }
 
     Resolver(Interpreter interpreter) {
         this.interpreter_ = interpreter;
@@ -22,6 +30,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     private void exitScope() {
+        for(Map.Entry<String, VARIABLE_STATE> entry:
+            scopes_.peek().entrySet()) {
+            if(entry.getValue() == INITIALIZED) {
+                System.out.println("[Warning]: " + entry.getKey() + " is declared but never used.");
+            }
+        }
         scopes_.pop();
     }
 
@@ -29,18 +43,18 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         // top level -> global env
         if(scopes_.empty()) return;
 
-        Map<String, Boolean> cur = scopes_.peek();
+        Map<String, VARIABLE_STATE> cur = scopes_.peek();
         if(cur.containsKey(name.lexeme_)) {
             Lox.error(name, "Redefine "+name.lexeme_);
         }
         // initialization not complete
-        cur.put(name.lexeme_, false);
+        cur.put(name.lexeme_, DECLARED);
     }
 
     private void define(Token name) {
         if(scopes_.empty()) return;
 
-        scopes_.peek().put(name.lexeme_, true);
+        scopes_.peek().put(name.lexeme_, INITIALIZED);
     }
 
     public void resolve(List<Stmt> stmts) {
@@ -55,11 +69,14 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         stmt.accept(this);
     }
 
-    private void resolveLocal(Expr variable, String name) {
+    private void resolveLocal(Expr variable, String name, boolean isRead) {
         for(int i=scopes_.size()-1; i>=0; i--) {
             if(scopes_.get(i).containsKey(name)) {
                 interpreter_.resolve(variable,
                         scopes_.size() - i - 1);
+                if(isRead) {
+                    scopes_.get(i).put(name, READ);
+                }
                 return;
             }
         }
@@ -70,7 +87,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     @Override
     public Void visitAssign(Expr.Assign expr) {
         resolve(expr.newVal);
-        resolveLocal(expr, expr.name.lexeme_);
+        resolveLocal(expr, expr.name.lexeme_, false);
         return null;
     }
 
@@ -102,12 +119,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     public Void visitVariable(Expr.Variable expr) {
 
         if(!scopes_.empty() && scopes_.peek().containsKey(expr.var.lexeme_)
-                && !scopes_.peek().get(expr.var.lexeme_)) {
+                && scopes_.peek().get(expr.var.lexeme_)==DECLARED) {
             // incomplete definition
             Lox.error(expr.var, "Can not initialize " + expr.var.lexeme_ +
                     " by itself");
         }
-        resolveLocal(expr, expr.var.lexeme_);
+        resolveLocal(expr, expr.var.lexeme_, true);
         return null;
     }
 
@@ -237,8 +254,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
 
         enterScope();
-        scopes_.peek().put("this", true);
-        scopes_.peek().put("super", true);
+        scopes_.peek().put("this", READ);
+        scopes_.peek().put("super", READ);
 //        for(Stmt.FuncDecl funcDecl: expr.methods) {
 //            declare(funcDecl.name);
 //            define(funcDecl.name);
