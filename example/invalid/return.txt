@@ -1,0 +1,11 @@
+return ;
+
+{
+    return 1;
+}
+
+fun f() {
+    return 1;
+}
+
+println f();

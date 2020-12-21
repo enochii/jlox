@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import static toy.jlox.Resolver.FUNCTION_TYPE.*;
 import static toy.jlox.Resolver.VARIABLE_STATE.*;
 
 /**
@@ -15,10 +16,18 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     final Stack<Map<String, VARIABLE_STATE>> scopes_ = new Stack<>();
     final Interpreter interpreter_;
 
+    private FUNCTION_TYPE curFunctionType = NONE;
+
     enum VARIABLE_STATE {
         DECLARED,
         INITIALIZED,
         READ
+    }
+
+    enum FUNCTION_TYPE {
+        NONE,
+        FUNCTION,
+        METHOD
     }
 
     Resolver(Interpreter interpreter) {
@@ -183,19 +192,22 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declare(stmt.name);
         define(stmt.name); // eagerly define
 
-        resolveFuncBody(stmt);
+        resolveFuncBody(stmt, FUNCTION);
 
         return null;
     }
 
-    private void resolveFuncBody(Stmt.FuncDecl stmt) {
+    private void resolveFuncBody(Stmt.FuncDecl stmt, FUNCTION_TYPE type) {
         enterScope();
         for(Token pa:stmt.parameters) {
             declare(pa);
             define(pa);
         }
+        FUNCTION_TYPE previous = curFunctionType;
+        curFunctionType = type;
         // body and the argument list are in the same scope!
         resolve(stmt.body.stmts);
+        curFunctionType = previous;
         exitScope();
     }
 
@@ -234,6 +246,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitReturnStmt(Stmt.ReturnStmt expr) {
+        if(curFunctionType == NONE) {
+            Lox.error(expr.semicolon,
+                    "Can not return when not in a method or function.");
+        }
         if(expr.expr != null) {
             resolve(expr.expr);
         }
@@ -261,7 +277,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 //            define(funcDecl.name);
 //        }
         for(Stmt.FuncDecl funcDecl: expr.methods) {
-            resolveFuncBody(funcDecl);
+            resolveFuncBody(funcDecl, METHOD);
         }
         exitScope();
         return null;
