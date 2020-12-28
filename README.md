@@ -10,7 +10,7 @@ http://www.craftinginterpreters.com/
 
 Mainly follow [this awesome book]( http://www.craftinginterpreters.com/), though there are some differences when it comes to implementation details. For example
 
-- `super` in mine is an `LoxInstance` rather than just a keyword. Tutorial use reference to class to find methods of superclass, but I do this by keeping an superclass instance in subclass instance. 
+- `super` in mine is an `LoxInstance` rather than just a keyword. Tutorial use reference to class to find methods of superclass, but I do this by keeping an superclass instance in subclass instance, and delegate the field search to `parentInstance.get(field)` when field is not found in current `get()`. See `LoxInstance.get()` definition for more details.
 
   > By this way, I can also get superclass's fields via subclass instance, but actually I think it's a dark corner. Because the dynamic behavior of class fields and also the shadowing.
 
